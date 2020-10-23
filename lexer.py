@@ -74,38 +74,129 @@ def t_error(t):
 # Build the lexer
 lexer = lex.lex()
 
+###############################################################################
+class Progress:
+    def __init__(self, funcs, externs=None):
+        self.funcs = funcs
 
-data = '''
-def void things (ref int $n) {
-  while (!($n > 100)) {
-    $n = $n * $n - 2;
-  }
-}
+        if externs:
+            self.externs = externs
+        else:
+            self.externs = None
 
-def int run () {
-    print "fib(5):";
-    int $val = fib(5);
-    print $val;
-    
-    print "fib(5)+1:";
-    inc($val);
-    print $val;
+    def yaml_format(self):
+        res = 'names: prog\n'
+        res = res + '  funcs:\n'
+        res = res + self.funcs.yaml_format('    ')
 
-    print "something else:";
-    things($val);
-    print $val;
+        if self.externs:
+            res = res + '  externs:\n'
+            res = res + self.externs.yaml_format('    ')
 
+        return res
 
-    return 0;
-}
-'''
+class Function:
+    type = 'function'
+    def __init__(self, ret_type, globid):
+        self.ret_type = ret_type
+        self.globid = globid
 
-# Give the lexer some input
-lexer.input(data)
+    def yaml_format(self, prefix=''):
+        res = prefix + '-\n'
+        res = res + prefix + '  ' + 'name: func\n'
+        res = res + prefix + '  ' + 'ret_type:' + self.ret_type + '\n'
+        res = res + prefix + '  ' + 'globid: ' + self.globid + '\n'
+        return res
 
-# Tokenize
+class Functions:
+    def __init__(self, functions):
+        self.functions = functions
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: funcs\n'
+        res = res + prefix + 'funcs:\n'
+
+        for func in self.functions:
+            res = res + func.yaml_format(prefix + '  ')
+        return res
+
+class External:
+    type = 'external'
+    def __init__(self, ret_type, globid):
+        self.ret_type = ret_type
+        self.globid = globid
+
+    def yaml_format(self, prefix=''):
+        res = prefix + '-\n'
+        res = res + prefix + '  ' + 'name: extern\n'
+        res = res + prefix + '  ' + 'ret_type:' + self.ret_type + '\n'
+        res = res + prefix + '  ' + 'globid: ' + self.globid + '\n'
+        return res
+
+class Externals:
+    def __init__(self, externs):
+        self.externs = externs
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: externs\n'
+        res = res + prefix + 'externs:\n'
+
+        for extern in self.externs:
+            res = res + extern.yaml_format(prefix + '  ')
+        return res
+
+def p_prog(p):
+    """
+    prog : funcs
+    prog : externs funcs
+    prog : funcs externs
+    """
+    if len(p) == 2:
+        p[0] = Progress(Functions(p[1]))
+    elif len(p) == 3:
+        if p[1][0].type == 'function':
+            p[0] = Progress(Functions(p[1]), Externals(p[2]))
+        else:
+            p[0] = Progress(Functions(p[2]), Externals(p[1]))
+    print(p[0].yaml_format())
+
+def p_funcs(p):
+    """
+    funcs : func
+    funcs : funcs func
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    elif len(p) == 3:
+        p[0] = p[1] + [p[2]]
+
+def p_externs(p):
+    """
+    externs : extern
+    externs : externs extern
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    elif len(p) == 3:
+        p[0] = p[1] + [p[2]]
+
+def p_extern(p):
+    'extern : EXTERN INT'
+    p[0] = External(p[2], 'test')
+
+def p_func(p):
+    'func : DEF INT'
+    p[0] = Function(p[2], 'test_f')
+
+def p_error(p):
+    print(f"Syntax error at {p.value!r}")
+
+import ply.yacc as yacc
+yacc.yacc()
+
 while True:
-    tok = lexer.token()
-    if not tok:
-        break      # No more input
-    print(tok)
+    try:
+        s = input('input > ')
+    except EOFError:
+        break
+    yacc.parse(s)

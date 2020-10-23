@@ -1,0 +1,258 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    AND
+    BOOL
+    CINT
+    COMMA
+    DIVIDE
+    DOLLAR
+    ELSE
+    EQUAL
+    EQUALITY
+    FALSE
+    FLOAT
+    GREATER
+    ID
+    IF
+    LBRACE
+    LBRACKET
+    LESS
+    LPAREN
+    MINUS
+    NOALIAS
+    NOT
+    NUMBER
+    OR
+    PLUS
+    PRINT
+    RBRACE
+    RBRACKET
+    REF
+    RETURN
+    RPAREN
+    SEMICOLON
+    SLIT
+    TIMES
+    TRUE
+    VOID
+    WHILE
+
+Grammar
+
+Rule 0     S' -> prog
+Rule 1     prog -> funcs
+Rule 2     prog -> externs funcs
+Rule 3     prog -> funcs externs
+Rule 4     funcs -> func
+Rule 5     funcs -> funcs func
+Rule 6     externs -> extern
+Rule 7     externs -> externs extern
+Rule 8     extern -> EXTERN INT
+Rule 9     func -> DEF INT
+
+Terminals, with rules where they appear
+
+AND                  : 
+BOOL                 : 
+CINT                 : 
+COMMA                : 
+DEF                  : 9
+DIVIDE               : 
+DOLLAR               : 
+ELSE                 : 
+EQUAL                : 
+EQUALITY             : 
+EXTERN               : 8
+FALSE                : 
+FLOAT                : 
+GREATER              : 
+ID                   : 
+IF                   : 
+INT                  : 8 9
+LBRACE               : 
+LBRACKET             : 
+LESS                 : 
+LPAREN               : 
+MINUS                : 
+NOALIAS              : 
+NOT                  : 
+NUMBER               : 
+OR                   : 
+PLUS                 : 
+PRINT                : 
+RBRACE               : 
+RBRACKET             : 
+REF                  : 
+RETURN               : 
+RPAREN               : 
+SEMICOLON            : 
+SLIT                 : 
+TIMES                : 
+TRUE                 : 
+VOID                 : 
+WHILE                : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+extern               : 6 7
+externs              : 2 3 7
+func                 : 4 5
+funcs                : 1 2 3 5
+prog                 : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . prog
+    (1) prog -> . funcs
+    (2) prog -> . externs funcs
+    (3) prog -> . funcs externs
+    (4) funcs -> . func
+    (5) funcs -> . funcs func
+    (6) externs -> . extern
+    (7) externs -> . externs extern
+    (9) func -> . DEF INT
+    (8) extern -> . EXTERN INT
+
+    DEF             shift and go to state 6
+    EXTERN          shift and go to state 7
+
+    prog                           shift and go to state 1
+    funcs                          shift and go to state 2
+    externs                        shift and go to state 3
+    func                           shift and go to state 4
+    extern                         shift and go to state 5
+
+state 1
+
+    (0) S' -> prog .
+
+
+
+state 2
+
+    (1) prog -> funcs .
+    (3) prog -> funcs . externs
+    (5) funcs -> funcs . func
+    (6) externs -> . extern
+    (7) externs -> . externs extern
+    (9) func -> . DEF INT
+    (8) extern -> . EXTERN INT
+
+    $end            reduce using rule 1 (prog -> funcs .)
+    DEF             shift and go to state 6
+    EXTERN          shift and go to state 7
+
+    externs                        shift and go to state 8
+    func                           shift and go to state 9
+    extern                         shift and go to state 5
+
+state 3
+
+    (2) prog -> externs . funcs
+    (7) externs -> externs . extern
+    (4) funcs -> . func
+    (5) funcs -> . funcs func
+    (8) extern -> . EXTERN INT
+    (9) func -> . DEF INT
+
+    EXTERN          shift and go to state 7
+    DEF             shift and go to state 6
+
+    funcs                          shift and go to state 10
+    extern                         shift and go to state 11
+    func                           shift and go to state 4
+
+state 4
+
+    (4) funcs -> func .
+
+    DEF             reduce using rule 4 (funcs -> func .)
+    EXTERN          reduce using rule 4 (funcs -> func .)
+    $end            reduce using rule 4 (funcs -> func .)
+
+
+state 5
+
+    (6) externs -> extern .
+
+    EXTERN          reduce using rule 6 (externs -> extern .)
+    DEF             reduce using rule 6 (externs -> extern .)
+    $end            reduce using rule 6 (externs -> extern .)
+
+
+state 6
+
+    (9) func -> DEF . INT
+
+    INT             shift and go to state 12
+
+
+state 7
+
+    (8) extern -> EXTERN . INT
+
+    INT             shift and go to state 13
+
+
+state 8
+
+    (3) prog -> funcs externs .
+    (7) externs -> externs . extern
+    (8) extern -> . EXTERN INT
+
+    $end            reduce using rule 3 (prog -> funcs externs .)
+    EXTERN          shift and go to state 7
+
+    extern                         shift and go to state 11
+
+state 9
+
+    (5) funcs -> funcs func .
+
+    DEF             reduce using rule 5 (funcs -> funcs func .)
+    EXTERN          reduce using rule 5 (funcs -> funcs func .)
+    $end            reduce using rule 5 (funcs -> funcs func .)
+
+
+state 10
+
+    (2) prog -> externs funcs .
+    (5) funcs -> funcs . func
+    (9) func -> . DEF INT
+
+    $end            reduce using rule 2 (prog -> externs funcs .)
+    DEF             shift and go to state 6
+
+    func                           shift and go to state 9
+
+state 11
+
+    (7) externs -> externs extern .
+
+    EXTERN          reduce using rule 7 (externs -> externs extern .)
+    DEF             reduce using rule 7 (externs -> externs extern .)
+    $end            reduce using rule 7 (externs -> externs extern .)
+
+
+state 12
+
+    (9) func -> DEF INT .
+
+    DEF             reduce using rule 9 (func -> DEF INT .)
+    EXTERN          reduce using rule 9 (func -> DEF INT .)
+    $end            reduce using rule 9 (func -> DEF INT .)
+
+
+state 13
+
+    (8) extern -> EXTERN INT .
+
+    EXTERN          reduce using rule 8 (extern -> EXTERN INT .)
+    DEF             reduce using rule 8 (extern -> EXTERN INT .)
+    $end            reduce using rule 8 (extern -> EXTERN INT .)
+
