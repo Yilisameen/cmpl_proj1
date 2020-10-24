@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'AND BOOL CINT COMMA DEF DIVIDE DOLLAR ELSE EQUAL EQUALITY EXTERN FALSE FLOAT GREATER ID IF INT LBRACE LBRACKET LESS LPAREN MINUS NOALIAS NOT NUMBER OR PLUS PRINT RBRACE RBRACKET REF RETURN RPAREN SEMICOLON SLIT TIMES TRUE VOID WHILE\n    prog : funcs\n    prog : externs funcs\n    prog : funcs externs\n    \n    funcs : func\n    funcs : funcs func\n    \n    externs : extern\n    externs : externs extern\n    extern : EXTERN INTfunc : DEF INT'
+_lr_signature = 'AND BOOL CINT COMMA DEF DIVIDE DOLLAR ELSE EQUAL EQUALITY EXTERN FALSE FLOAT GREATER ID IF INT LBRACE LBRACKET LESS LPAREN MINUS NOALIAS NOT NUMBER OR PLUS PRINT RBRACE RBRACKET REF RETURN RPAREN SEMICOLON SLIT TIMES TRUE VOID WHILE exp tdecls vdecl vdecls\n    prog : funcs\n    prog : externs funcs\n    \n    externs : extern \n    externs : extern externs\n    \n    funcs : func\n    funcs : func funcs\n    \n    extern : EXTERN TYPE ID LPAREN RPAREN SEMICOLON\n    extern : EXTERN TYPE ID LPAREN tdecls RPAREN SEMICOLON\n    \n    func : DEF TYPE ID LPAREN RPAREN blk\n    func : DEF TYPE ID LPAREN vdecls RPAREN blk\n    \n    blk : LBRACE RBRACE\n    blk : LBRACE stmts RBRACE\n    \n    stmts : stmt\n    stmts : stmt stmts\n    stmt : blk\n    stmt : RETURN SEMICOLON \n         | RETURN exp SEMICOLON\n    \n    stmt : vdecl EQUAL exp SEMICOLON\n    \n    stmt : exp SEMICOLON\n    \n    stmt : WHILE LPAREN exp RPAREN stmt\n    \n    stmt : IF LPAREN exp RPAREN stmt\n         | IF LPAREN exp RPAREN stmt ELSE stmt\n    \n    stmt : PRINT exp SEMICOLON\n    \n    stmt : PRINT SLIT SEMICOLON\n    \n    TYPE : INT\n         | CINT\n         | FLOAT\n         | BOOL \n         | VOID\n    '
     
-_lr_action_items = {'DEF':([0,2,3,4,5,9,10,11,12,13,],[6,6,6,-4,-6,-5,6,-7,-9,-8,]),'EXTERN':([0,2,3,4,5,8,9,11,12,13,],[7,7,7,-4,-6,7,-5,-7,-9,-8,]),'$end':([1,2,4,5,8,9,10,11,12,13,],[0,-1,-4,-6,-3,-5,-2,-7,-9,-8,]),'INT':([6,7,],[12,13,]),}
+_lr_action_items = {'DEF':([0,3,4,5,10,26,29,31,41,42,43,],[6,6,6,-3,-4,-9,-7,-11,-10,-8,-12,]),'EXTERN':([0,5,29,42,],[7,7,-7,-8,]),'$end':([1,2,4,8,9,26,31,41,43,],[0,-1,-5,-2,-6,-9,-11,-10,-12,]),'INT':([6,7,],[12,12,]),'CINT':([6,7,],[13,13,]),'FLOAT':([6,7,],[14,14,]),'BOOL':([6,7,],[15,15,]),'VOID':([6,7,],[16,16,]),'ID':([11,12,13,14,15,16,17,],[18,-25,-26,-27,-28,-29,19,]),'LPAREN':([18,19,38,39,],[20,21,49,50,]),'RPAREN':([20,21,23,25,55,56,],[22,24,28,30,60,61,]),'vdecls':([20,],[23,]),'tdecls':([21,],[25,]),'LBRACE':([22,27,28,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[27,27,27,-11,27,-15,-12,-16,-19,-17,-23,-24,-18,27,27,-20,-21,27,-22,]),'SEMICOLON':([24,30,35,36,46,51,52,54,],[29,42,45,47,53,57,58,59,]),'RBRACE':([27,31,32,33,34,43,44,45,47,53,57,58,59,62,63,65,],[31,-11,43,-13,-15,-12,-14,-16,-19,-17,-23,-24,-18,-20,-21,-22,]),'RETURN':([27,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[35,-11,35,-15,-12,-16,-19,-17,-23,-24,-18,35,35,-20,-21,35,-22,]),'vdecl':([27,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[37,-11,37,-15,-12,-16,-19,-17,-23,-24,-18,37,37,-20,-21,37,-22,]),'exp':([27,31,33,34,35,40,43,45,47,48,49,50,53,57,58,59,60,61,62,63,64,65,],[36,-11,36,-15,46,51,-12,-16,-19,54,55,56,-17,-23,-24,-18,36,36,-20,-21,36,-22,]),'WHILE':([27,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[38,-11,38,-15,-12,-16,-19,-17,-23,-24,-18,38,38,-20,-21,38,-22,]),'IF':([27,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[39,-11,39,-15,-12,-16,-19,-17,-23,-24,-18,39,39,-20,-21,39,-22,]),'PRINT':([27,31,33,34,43,45,47,53,57,58,59,60,61,62,63,64,65,],[40,-11,40,-15,-12,-16,-19,-17,-23,-24,-18,40,40,-20,-21,40,-22,]),'ELSE':([31,34,43,45,47,53,57,58,59,62,63,65,],[-11,-15,-12,-16,-19,-17,-23,-24,-18,-20,64,-22,]),'EQUAL':([37,],[48,]),'SLIT':([40,],[52,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'prog':([0,],[1,]),'funcs':([0,3,],[2,10,]),'externs':([0,2,],[3,8,]),'func':([0,2,3,10,],[4,9,4,9,]),'extern':([0,2,3,8,],[5,5,11,11,]),}
+_lr_goto_items = {'prog':([0,],[1,]),'funcs':([0,3,4,],[2,8,9,]),'externs':([0,5,],[3,10,]),'func':([0,3,4,],[4,4,4,]),'extern':([0,5,],[5,5,]),'TYPE':([6,7,],[11,17,]),'blk':([22,27,28,33,60,61,64,],[26,34,41,34,34,34,34,]),'stmts':([27,33,],[32,44,]),'stmt':([27,33,60,61,64,],[33,33,62,63,65,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,13 +27,33 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> prog","S'",1,None,None,None),
-  ('prog -> funcs','prog',1,'p_prog','lexer.py',150),
-  ('prog -> externs funcs','prog',2,'p_prog','lexer.py',151),
-  ('prog -> funcs externs','prog',2,'p_prog','lexer.py',152),
-  ('funcs -> func','funcs',1,'p_funcs','lexer.py',165),
-  ('funcs -> funcs func','funcs',2,'p_funcs','lexer.py',166),
-  ('externs -> extern','externs',1,'p_externs','lexer.py',175),
-  ('externs -> externs extern','externs',2,'p_externs','lexer.py',176),
-  ('extern -> EXTERN INT','extern',2,'p_extern','lexer.py',184),
-  ('func -> DEF INT','func',2,'p_func','lexer.py',188),
+  ('prog -> funcs','prog',1,'p_prog','lexer.py',352),
+  ('prog -> externs funcs','prog',2,'p_prog','lexer.py',353),
+  ('externs -> extern','externs',1,'p_externs','lexer.py',362),
+  ('externs -> extern externs','externs',2,'p_externs','lexer.py',363),
+  ('funcs -> func','funcs',1,'p_funcs','lexer.py',374),
+  ('funcs -> func funcs','funcs',2,'p_funcs','lexer.py',375),
+  ('extern -> EXTERN TYPE ID LPAREN RPAREN SEMICOLON','extern',6,'p_extern','lexer.py',385),
+  ('extern -> EXTERN TYPE ID LPAREN tdecls RPAREN SEMICOLON','extern',7,'p_extern','lexer.py',386),
+  ('func -> DEF TYPE ID LPAREN RPAREN blk','func',6,'p_func','lexer.py',395),
+  ('func -> DEF TYPE ID LPAREN vdecls RPAREN blk','func',7,'p_func','lexer.py',396),
+  ('blk -> LBRACE RBRACE','blk',2,'p_blk','lexer.py',405),
+  ('blk -> LBRACE stmts RBRACE','blk',3,'p_blk','lexer.py',406),
+  ('stmts -> stmt','stmts',1,'p_stmts','lexer.py',416),
+  ('stmts -> stmt stmts','stmts',2,'p_stmts','lexer.py',417),
+  ('stmt -> blk','stmt',1,'p_stmt_blk','lexer.py',426),
+  ('stmt -> RETURN SEMICOLON','stmt',2,'p_stmt_ret','lexer.py',431),
+  ('stmt -> RETURN exp SEMICOLON','stmt',3,'p_stmt_ret','lexer.py',432),
+  ('stmt -> vdecl EQUAL exp SEMICOLON','stmt',4,'p_stmt_vdecl','lexer.py',441),
+  ('stmt -> exp SEMICOLON','stmt',2,'p_stmt_expSemi','lexer.py',448),
+  ('stmt -> WHILE LPAREN exp RPAREN stmt','stmt',5,'p_stmt_while','lexer.py',454),
+  ('stmt -> IF LPAREN exp RPAREN stmt','stmt',5,'p_stmt_if','lexer.py',460),
+  ('stmt -> IF LPAREN exp RPAREN stmt ELSE stmt','stmt',7,'p_stmt_if','lexer.py',461),
+  ('stmt -> PRINT exp SEMICOLON','stmt',3,'p_stmt_print_exp','lexer.py',470),
+  ('stmt -> PRINT SLIT SEMICOLON','stmt',3,'p_stmt_print_slit','lexer.py',476),
+  ('TYPE -> INT','TYPE',1,'p_type','lexer.py',483),
+  ('TYPE -> CINT','TYPE',1,'p_type','lexer.py',484),
+  ('TYPE -> FLOAT','TYPE',1,'p_type','lexer.py',485),
+  ('TYPE -> BOOL','TYPE',1,'p_type','lexer.py',486),
+  ('TYPE -> VOID','TYPE',1,'p_type','lexer.py',487),
 ]
