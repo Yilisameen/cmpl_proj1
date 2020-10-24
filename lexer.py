@@ -75,37 +75,18 @@ def t_error(t):
 lexer = lex.lex()
 
 
-data = '''
-def void things (ref int $n) {
-  while (!($n > 100)) {
-    $n = $n * $n - 2;
-  }
-}
-
-def int run () {
-    print "fib(5):";
-    int $val = fib(5);
-    print $val;
-    
-    print "fib(5)+1:";
-    inc($val);
-    print $val;
-
-    print "something else:";
-    things($val);
-    print $val;
-
-
-    return 0;
-}
-'''
+# data = '''
+# $x = [int] ($a + $b - $c / $a * $b);
+# || and &&
+# '''
 
 # Give the lexer some input
-lexer.input(data)
+# lexer.input(data)
 
-# Tokenize
-while True:
-    tok = lexer.token()
-    if not tok:
-        break      # No more input
-    print(tok)
+# # Tokenize
+# while True:
+#     tok = lexer.token()
+#     if not tok:
+#         break      # No more input
+#     print(tok)
+# 
