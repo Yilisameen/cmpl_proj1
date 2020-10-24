@@ -76,20 +76,23 @@ lexer = lex.lex()
 
 ###############################################################################
 class Progress:
-    def __init__(self, funcs, externs=None):
-        self.funcs = funcs
+    def __init__(self, funcs):
+        self.type = 'progress'
+        self.funcs = Functions(funcs)
+        self.externs = Externals([])
 
-        if externs:
-            self.externs = externs
-        else:
-            self.externs = None
+    def add_func(self, func):
+        self.funcs.add(func)
 
-    def yaml_format(self):
+    def add_extern(self, extern):
+        self.externs.add(extern)
+
+    def __repr__(self):
         res = 'names: prog\n'
         res = res + '  funcs:\n'
         res = res + self.funcs.yaml_format('    ')
 
-        if self.externs:
+        if self.externs.externs:
             res = res + '  externs:\n'
             res = res + self.externs.yaml_format('    ')
 
@@ -110,7 +113,11 @@ class Function:
 
 class Functions:
     def __init__(self, functions):
+        self.type = 'functions'
         self.functions = functions
+
+    def add(self, func):
+        self.functions.append(func)
 
     def yaml_format(self, prefix=''):
         res = prefix + 'name: funcs\n'
@@ -135,7 +142,11 @@ class External:
 
 class Externals:
     def __init__(self, externs):
+        self.type = 'externs'
         self.externs = externs
+
+    def add(self, extern):
+        self.externs.append(extern)
 
     def yaml_format(self, prefix=''):
         res = prefix + 'name: externs\n'
@@ -147,38 +158,23 @@ class Externals:
 
 def p_prog(p):
     """
-    prog : funcs
-    prog : externs funcs
-    prog : funcs externs
+    prog : prog func
+    prog : prog extern
+    prog : extern prog
     """
-    if len(p) == 2:
-        p[0] = Progress(Functions(p[1]))
-    elif len(p) == 3:
-        if p[1][0].type == 'function':
-            p[0] = Progress(Functions(p[1]), Externals(p[2]))
-        else:
-            p[0] = Progress(Functions(p[2]), Externals(p[1]))
-    print(p[0].yaml_format())
+    if p[2].type == 'function':
+        p[1].add_func(p[2])
+        p[0] = p[1]
+    elif p[2].type == 'external':
+        p[1].add_extern(p[2])
+        p[0] = p[1]
+    else:
+        p[2].add_extern(p[1])
+        p[0] = p[2]
 
-def p_funcs(p):
-    """
-    funcs : func
-    funcs : funcs func
-    """
-    if len(p) == 2:
-        p[0] = [p[1]]
-    elif len(p) == 3:
-        p[0] = p[1] + [p[2]]
-
-def p_externs(p):
-    """
-    externs : extern
-    externs : externs extern
-    """
-    if len(p) == 2:
-        p[0] = [p[1]]
-    elif len(p) == 3:
-        p[0] = p[1] + [p[2]]
+def p_prog_func(p):
+    'prog : func'
+    p[0] = Progress([p[1]])
 
 def p_extern(p):
     'extern : EXTERN INT'
@@ -199,4 +195,4 @@ while True:
         s = input('input > ')
     except EOFError:
         break
-    yacc.parse(s)
+    print(yacc.parse(s))
