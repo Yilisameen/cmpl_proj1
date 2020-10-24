@@ -17,7 +17,9 @@ reserved = {
     'bool' : 'BOOL',
     'void' : 'VOID',
     'ref' : 'REF',
-    'noalias': 'NOALIAS'
+    'noalias': 'NOALIAS',
+    # for test
+    #'exp' : 'EXP'
 }
 
 tokens = [

@@ -2,263 +2,2168 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    AND
     BOOL
     DEF
-    DIVIDE
     ELSE
-    EQUAL
-    EQUALITY
     EXTERN
-    FALSE
-    GREATER
     IF
     LBRACE
-    LBRACKET
-    LESS
-    LPAREN
-    MINUS
-    NOT
-    NUMBER
-    OR
-    PLUS
     PRINT
     RBRACE
-    RBRACKET
     RETURN
-    RPAREN
     SEMICOLON
     SLIT
-    TIMES
-    TRUE
     WHILE
 
 Grammar
 
-Rule 0     S' -> TDECLS
-Rule 1     TDECLS -> TYPE
-Rule 2     TDECLS -> TYPE COMMA TDECLS
-Rule 3     VDECLS -> VDECL COMMA VDECLS
-Rule 4     VDECLS -> VDECL
-Rule 5     VDECL -> TYPE VARID
-Rule 6     VARID -> DOLLAR ID
-Rule 7     GLOBID -> ID
-Rule 8     TYPE -> INT
-Rule 9     TYPE -> FLOAT
-Rule 10    TYPE -> CINT
-Rule 11    TYPE -> VOID
-Rule 12    TYPE -> REF TYPE
-Rule 13    TYPE -> NOALIAS REF TYPE
+Rule 0     S' -> EXPS
+Rule 1     EXPS -> EXP
+Rule 2     EXPS -> EXP COMMA EXPS
+Rule 3     EXP -> EXPPAREN
+Rule 4     EXP -> BINOP
+Rule 5     EXP -> UOP
+Rule 6     EXP -> LIT
+Rule 7     EXP -> VARID
+Rule 8     EXP -> EXPGLOBID
+Rule 9     EXPPAREN -> LPAREN EXP RPAREN
+Rule 10    EXPGLOBID -> GLOBID EXPWRAPPER
+Rule 11    EXPWRAPPER -> LPAREN RPAREN
+Rule 12    EXPWRAPPER -> LPAREN EXPS RPAREN
+Rule 13    ASSIGN -> VARID EQUAL EXP
+Rule 14    TYPECAST -> LBRACKET TYPE RBRACKET EXP
+Rule 15    BINOP -> ARITHOPS
+Rule 16    BINOP -> LOGICOPS
+Rule 17    BINOP -> ASSIGN
+Rule 18    BINOP -> TYPECAST
+Rule 19    ARITHOPS -> EXP TIMES EXP
+Rule 20    ARITHOPS -> EXP DIVIDE EXP
+Rule 21    ARITHOPS -> EXP PLUS EXP
+Rule 22    ARITHOPS -> EXP MINUS EXP
+Rule 23    LOGICOPS -> EXP EQUALITY EXP
+Rule 24    LOGICOPS -> EXP LESS EXP
+Rule 25    LOGICOPS -> EXP GREATER EXP
+Rule 26    LOGICOPS -> EXP AND EXP
+Rule 27    LOGICOPS -> EXP OR EXP
+Rule 28    UOP -> NOT EXP
+Rule 29    UOP -> MINUS EXP
+Rule 30    LIT -> TRUE
+Rule 31    LIT -> FALSE
+Rule 32    LIT -> NUMBER
+Rule 33    TDECLS -> TYPE
+Rule 34    TDECLS -> TYPE COMMA TDECLS
+Rule 35    VDECLS -> VDECL COMMA VDECLS
+Rule 36    VDECLS -> VDECL
+Rule 37    VDECL -> TYPE VARID
+Rule 38    VARID -> DOLLAR ID
+Rule 39    GLOBID -> ID
+Rule 40    TYPE -> INT
+Rule 41    TYPE -> FLOAT
+Rule 42    TYPE -> CINT
+Rule 43    TYPE -> VOID
+Rule 44    TYPE -> REF TYPE
+Rule 45    TYPE -> NOALIAS REF TYPE
 
 Terminals, with rules where they appear
 
-AND                  : 
+AND                  : 26
 BOOL                 : 
-CINT                 : 10
-COMMA                : 2 3
+CINT                 : 42
+COMMA                : 2 34 35
 DEF                  : 
-DIVIDE               : 
-DOLLAR               : 6
+DIVIDE               : 20
+DOLLAR               : 38
 ELSE                 : 
-EQUAL                : 
-EQUALITY             : 
+EQUAL                : 13
+EQUALITY             : 23
 EXTERN               : 
-FALSE                : 
-FLOAT                : 9
-GREATER              : 
-ID                   : 6 7
+FALSE                : 31
+FLOAT                : 41
+GREATER              : 25
+ID                   : 38 39
 IF                   : 
-INT                  : 8
+INT                  : 40
 LBRACE               : 
-LBRACKET             : 
-LESS                 : 
-LPAREN               : 
-MINUS                : 
-NOALIAS              : 13
-NOT                  : 
-NUMBER               : 
-OR                   : 
-PLUS                 : 
+LBRACKET             : 14
+LESS                 : 24
+LPAREN               : 9 11 12
+MINUS                : 22 29
+NOALIAS              : 45
+NOT                  : 28
+NUMBER               : 32
+OR                   : 27
+PLUS                 : 21
 PRINT                : 
 RBRACE               : 
-RBRACKET             : 
-REF                  : 12 13
+RBRACKET             : 14
+REF                  : 44 45
 RETURN               : 
-RPAREN               : 
+RPAREN               : 9 11 12
 SEMICOLON            : 
 SLIT                 : 
-TIMES                : 
-TRUE                 : 
-VOID                 : 11
+TIMES                : 19
+TRUE                 : 30
+VOID                 : 43
 WHILE                : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-GLOBID               : 
-TDECLS               : 2 0
-TYPE                 : 1 2 5 12 13
-VARID                : 5
-VDECL                : 3 4
-VDECLS               : 3
+ARITHOPS             : 15
+ASSIGN               : 17
+BINOP                : 4
+EXP                  : 1 2 9 13 14 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 29
+EXPGLOBID            : 8
+EXPPAREN             : 3
+EXPS                 : 2 12 0
+EXPWRAPPER           : 10
+GLOBID               : 10
+LIT                  : 6
+LOGICOPS             : 16
+TDECLS               : 34
+TYPE                 : 14 33 34 37 44 45
+TYPECAST             : 18
+UOP                  : 5
+VARID                : 7 13 37
+VDECL                : 35 36
+VDECLS               : 35
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . TDECLS
-    (1) TDECLS -> . TYPE
-    (2) TDECLS -> . TYPE COMMA TDECLS
-    (8) TYPE -> . INT
-    (9) TYPE -> . FLOAT
-    (10) TYPE -> . CINT
-    (11) TYPE -> . VOID
-    (12) TYPE -> . REF TYPE
-    (13) TYPE -> . NOALIAS REF TYPE
+    (0) S' -> . EXPS
+    (1) EXPS -> . EXP
+    (2) EXPS -> . EXP COMMA EXPS
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
 
-    INT             shift and go to state 3
-    FLOAT           shift and go to state 4
-    CINT            shift and go to state 5
-    VOID            shift and go to state 6
-    REF             shift and go to state 7
-    NOALIAS         shift and go to state 8
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
 
-    TDECLS                         shift and go to state 1
-    TYPE                           shift and go to state 2
+    EXPS                           shift and go to state 1
+    EXP                            shift and go to state 2
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
 
 state 1
 
-    (0) S' -> TDECLS .
+    (0) S' -> EXPS .
 
 
 
 state 2
 
-    (1) TDECLS -> TYPE .
-    (2) TDECLS -> TYPE . COMMA TDECLS
+    (1) EXPS -> EXP .
+    (2) EXPS -> EXP . COMMA EXPS
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
 
-    $end            reduce using rule 1 (TDECLS -> TYPE .)
-    COMMA           shift and go to state 9
+    $end            reduce using rule 1 (EXPS -> EXP .)
+    RPAREN          reduce using rule 1 (EXPS -> EXP .)
+    COMMA           shift and go to state 23
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+    OR              shift and go to state 32
 
 
 state 3
 
-    (8) TYPE -> INT .
+    (3) EXP -> EXPPAREN .
 
-    COMMA           reduce using rule 8 (TYPE -> INT .)
-    $end            reduce using rule 8 (TYPE -> INT .)
+    COMMA           reduce using rule 3 (EXP -> EXPPAREN .)
+    TIMES           reduce using rule 3 (EXP -> EXPPAREN .)
+    DIVIDE          reduce using rule 3 (EXP -> EXPPAREN .)
+    PLUS            reduce using rule 3 (EXP -> EXPPAREN .)
+    MINUS           reduce using rule 3 (EXP -> EXPPAREN .)
+    EQUALITY        reduce using rule 3 (EXP -> EXPPAREN .)
+    LESS            reduce using rule 3 (EXP -> EXPPAREN .)
+    GREATER         reduce using rule 3 (EXP -> EXPPAREN .)
+    AND             reduce using rule 3 (EXP -> EXPPAREN .)
+    OR              reduce using rule 3 (EXP -> EXPPAREN .)
+    $end            reduce using rule 3 (EXP -> EXPPAREN .)
+    RPAREN          reduce using rule 3 (EXP -> EXPPAREN .)
 
 
 state 4
 
-    (9) TYPE -> FLOAT .
+    (4) EXP -> BINOP .
 
-    COMMA           reduce using rule 9 (TYPE -> FLOAT .)
-    $end            reduce using rule 9 (TYPE -> FLOAT .)
+    COMMA           reduce using rule 4 (EXP -> BINOP .)
+    TIMES           reduce using rule 4 (EXP -> BINOP .)
+    DIVIDE          reduce using rule 4 (EXP -> BINOP .)
+    PLUS            reduce using rule 4 (EXP -> BINOP .)
+    MINUS           reduce using rule 4 (EXP -> BINOP .)
+    EQUALITY        reduce using rule 4 (EXP -> BINOP .)
+    LESS            reduce using rule 4 (EXP -> BINOP .)
+    GREATER         reduce using rule 4 (EXP -> BINOP .)
+    AND             reduce using rule 4 (EXP -> BINOP .)
+    OR              reduce using rule 4 (EXP -> BINOP .)
+    $end            reduce using rule 4 (EXP -> BINOP .)
+    RPAREN          reduce using rule 4 (EXP -> BINOP .)
 
 
 state 5
 
-    (10) TYPE -> CINT .
+    (5) EXP -> UOP .
 
-    COMMA           reduce using rule 10 (TYPE -> CINT .)
-    $end            reduce using rule 10 (TYPE -> CINT .)
+    COMMA           reduce using rule 5 (EXP -> UOP .)
+    TIMES           reduce using rule 5 (EXP -> UOP .)
+    DIVIDE          reduce using rule 5 (EXP -> UOP .)
+    PLUS            reduce using rule 5 (EXP -> UOP .)
+    MINUS           reduce using rule 5 (EXP -> UOP .)
+    EQUALITY        reduce using rule 5 (EXP -> UOP .)
+    LESS            reduce using rule 5 (EXP -> UOP .)
+    GREATER         reduce using rule 5 (EXP -> UOP .)
+    AND             reduce using rule 5 (EXP -> UOP .)
+    OR              reduce using rule 5 (EXP -> UOP .)
+    $end            reduce using rule 5 (EXP -> UOP .)
+    RPAREN          reduce using rule 5 (EXP -> UOP .)
 
 
 state 6
 
-    (11) TYPE -> VOID .
+    (6) EXP -> LIT .
 
-    COMMA           reduce using rule 11 (TYPE -> VOID .)
-    $end            reduce using rule 11 (TYPE -> VOID .)
+    COMMA           reduce using rule 6 (EXP -> LIT .)
+    TIMES           reduce using rule 6 (EXP -> LIT .)
+    DIVIDE          reduce using rule 6 (EXP -> LIT .)
+    PLUS            reduce using rule 6 (EXP -> LIT .)
+    MINUS           reduce using rule 6 (EXP -> LIT .)
+    EQUALITY        reduce using rule 6 (EXP -> LIT .)
+    LESS            reduce using rule 6 (EXP -> LIT .)
+    GREATER         reduce using rule 6 (EXP -> LIT .)
+    AND             reduce using rule 6 (EXP -> LIT .)
+    OR              reduce using rule 6 (EXP -> LIT .)
+    $end            reduce using rule 6 (EXP -> LIT .)
+    RPAREN          reduce using rule 6 (EXP -> LIT .)
 
 
 state 7
 
-    (12) TYPE -> REF . TYPE
-    (8) TYPE -> . INT
-    (9) TYPE -> . FLOAT
-    (10) TYPE -> . CINT
-    (11) TYPE -> . VOID
-    (12) TYPE -> . REF TYPE
-    (13) TYPE -> . NOALIAS REF TYPE
+    (7) EXP -> VARID .
+    (13) ASSIGN -> VARID . EQUAL EXP
 
-    INT             shift and go to state 3
-    FLOAT           shift and go to state 4
-    CINT            shift and go to state 5
-    VOID            shift and go to state 6
-    REF             shift and go to state 7
-    NOALIAS         shift and go to state 8
+    COMMA           reduce using rule 7 (EXP -> VARID .)
+    TIMES           reduce using rule 7 (EXP -> VARID .)
+    DIVIDE          reduce using rule 7 (EXP -> VARID .)
+    PLUS            reduce using rule 7 (EXP -> VARID .)
+    MINUS           reduce using rule 7 (EXP -> VARID .)
+    EQUALITY        reduce using rule 7 (EXP -> VARID .)
+    LESS            reduce using rule 7 (EXP -> VARID .)
+    GREATER         reduce using rule 7 (EXP -> VARID .)
+    AND             reduce using rule 7 (EXP -> VARID .)
+    OR              reduce using rule 7 (EXP -> VARID .)
+    $end            reduce using rule 7 (EXP -> VARID .)
+    RPAREN          reduce using rule 7 (EXP -> VARID .)
+    EQUAL           shift and go to state 33
 
-    TYPE                           shift and go to state 10
 
 state 8
 
-    (13) TYPE -> NOALIAS . REF TYPE
+    (8) EXP -> EXPGLOBID .
 
-    REF             shift and go to state 11
+    COMMA           reduce using rule 8 (EXP -> EXPGLOBID .)
+    TIMES           reduce using rule 8 (EXP -> EXPGLOBID .)
+    DIVIDE          reduce using rule 8 (EXP -> EXPGLOBID .)
+    PLUS            reduce using rule 8 (EXP -> EXPGLOBID .)
+    MINUS           reduce using rule 8 (EXP -> EXPGLOBID .)
+    EQUALITY        reduce using rule 8 (EXP -> EXPGLOBID .)
+    LESS            reduce using rule 8 (EXP -> EXPGLOBID .)
+    GREATER         reduce using rule 8 (EXP -> EXPGLOBID .)
+    AND             reduce using rule 8 (EXP -> EXPGLOBID .)
+    OR              reduce using rule 8 (EXP -> EXPGLOBID .)
+    $end            reduce using rule 8 (EXP -> EXPGLOBID .)
+    RPAREN          reduce using rule 8 (EXP -> EXPGLOBID .)
 
 
 state 9
 
-    (2) TDECLS -> TYPE COMMA . TDECLS
-    (1) TDECLS -> . TYPE
-    (2) TDECLS -> . TYPE COMMA TDECLS
-    (8) TYPE -> . INT
-    (9) TYPE -> . FLOAT
-    (10) TYPE -> . CINT
-    (11) TYPE -> . VOID
-    (12) TYPE -> . REF TYPE
-    (13) TYPE -> . NOALIAS REF TYPE
+    (9) EXPPAREN -> LPAREN . EXP RPAREN
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
 
-    INT             shift and go to state 3
-    FLOAT           shift and go to state 4
-    CINT            shift and go to state 5
-    VOID            shift and go to state 6
-    REF             shift and go to state 7
-    NOALIAS         shift and go to state 8
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
 
-    TYPE                           shift and go to state 2
-    TDECLS                         shift and go to state 12
+    EXP                            shift and go to state 34
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
 
 state 10
 
-    (12) TYPE -> REF TYPE .
+    (15) BINOP -> ARITHOPS .
 
-    COMMA           reduce using rule 12 (TYPE -> REF TYPE .)
-    $end            reduce using rule 12 (TYPE -> REF TYPE .)
+    COMMA           reduce using rule 15 (BINOP -> ARITHOPS .)
+    TIMES           reduce using rule 15 (BINOP -> ARITHOPS .)
+    DIVIDE          reduce using rule 15 (BINOP -> ARITHOPS .)
+    PLUS            reduce using rule 15 (BINOP -> ARITHOPS .)
+    MINUS           reduce using rule 15 (BINOP -> ARITHOPS .)
+    EQUALITY        reduce using rule 15 (BINOP -> ARITHOPS .)
+    LESS            reduce using rule 15 (BINOP -> ARITHOPS .)
+    GREATER         reduce using rule 15 (BINOP -> ARITHOPS .)
+    AND             reduce using rule 15 (BINOP -> ARITHOPS .)
+    OR              reduce using rule 15 (BINOP -> ARITHOPS .)
+    $end            reduce using rule 15 (BINOP -> ARITHOPS .)
+    RPAREN          reduce using rule 15 (BINOP -> ARITHOPS .)
 
 
 state 11
 
-    (13) TYPE -> NOALIAS REF . TYPE
-    (8) TYPE -> . INT
-    (9) TYPE -> . FLOAT
-    (10) TYPE -> . CINT
-    (11) TYPE -> . VOID
-    (12) TYPE -> . REF TYPE
-    (13) TYPE -> . NOALIAS REF TYPE
+    (16) BINOP -> LOGICOPS .
 
-    INT             shift and go to state 3
-    FLOAT           shift and go to state 4
-    CINT            shift and go to state 5
-    VOID            shift and go to state 6
-    REF             shift and go to state 7
-    NOALIAS         shift and go to state 8
+    COMMA           reduce using rule 16 (BINOP -> LOGICOPS .)
+    TIMES           reduce using rule 16 (BINOP -> LOGICOPS .)
+    DIVIDE          reduce using rule 16 (BINOP -> LOGICOPS .)
+    PLUS            reduce using rule 16 (BINOP -> LOGICOPS .)
+    MINUS           reduce using rule 16 (BINOP -> LOGICOPS .)
+    EQUALITY        reduce using rule 16 (BINOP -> LOGICOPS .)
+    LESS            reduce using rule 16 (BINOP -> LOGICOPS .)
+    GREATER         reduce using rule 16 (BINOP -> LOGICOPS .)
+    AND             reduce using rule 16 (BINOP -> LOGICOPS .)
+    OR              reduce using rule 16 (BINOP -> LOGICOPS .)
+    $end            reduce using rule 16 (BINOP -> LOGICOPS .)
+    RPAREN          reduce using rule 16 (BINOP -> LOGICOPS .)
 
-    TYPE                           shift and go to state 13
 
 state 12
 
-    (2) TDECLS -> TYPE COMMA TDECLS .
+    (17) BINOP -> ASSIGN .
 
-    $end            reduce using rule 2 (TDECLS -> TYPE COMMA TDECLS .)
+    COMMA           reduce using rule 17 (BINOP -> ASSIGN .)
+    TIMES           reduce using rule 17 (BINOP -> ASSIGN .)
+    DIVIDE          reduce using rule 17 (BINOP -> ASSIGN .)
+    PLUS            reduce using rule 17 (BINOP -> ASSIGN .)
+    MINUS           reduce using rule 17 (BINOP -> ASSIGN .)
+    EQUALITY        reduce using rule 17 (BINOP -> ASSIGN .)
+    LESS            reduce using rule 17 (BINOP -> ASSIGN .)
+    GREATER         reduce using rule 17 (BINOP -> ASSIGN .)
+    AND             reduce using rule 17 (BINOP -> ASSIGN .)
+    OR              reduce using rule 17 (BINOP -> ASSIGN .)
+    $end            reduce using rule 17 (BINOP -> ASSIGN .)
+    RPAREN          reduce using rule 17 (BINOP -> ASSIGN .)
 
 
 state 13
 
-    (13) TYPE -> NOALIAS REF TYPE .
+    (18) BINOP -> TYPECAST .
 
-    COMMA           reduce using rule 13 (TYPE -> NOALIAS REF TYPE .)
-    $end            reduce using rule 13 (TYPE -> NOALIAS REF TYPE .)
+    COMMA           reduce using rule 18 (BINOP -> TYPECAST .)
+    TIMES           reduce using rule 18 (BINOP -> TYPECAST .)
+    DIVIDE          reduce using rule 18 (BINOP -> TYPECAST .)
+    PLUS            reduce using rule 18 (BINOP -> TYPECAST .)
+    MINUS           reduce using rule 18 (BINOP -> TYPECAST .)
+    EQUALITY        reduce using rule 18 (BINOP -> TYPECAST .)
+    LESS            reduce using rule 18 (BINOP -> TYPECAST .)
+    GREATER         reduce using rule 18 (BINOP -> TYPECAST .)
+    AND             reduce using rule 18 (BINOP -> TYPECAST .)
+    OR              reduce using rule 18 (BINOP -> TYPECAST .)
+    $end            reduce using rule 18 (BINOP -> TYPECAST .)
+    RPAREN          reduce using rule 18 (BINOP -> TYPECAST .)
 
+
+state 14
+
+    (28) UOP -> NOT . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 35
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 15
+
+    (29) UOP -> MINUS . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 36
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 16
+
+    (30) LIT -> TRUE .
+
+    COMMA           reduce using rule 30 (LIT -> TRUE .)
+    TIMES           reduce using rule 30 (LIT -> TRUE .)
+    DIVIDE          reduce using rule 30 (LIT -> TRUE .)
+    PLUS            reduce using rule 30 (LIT -> TRUE .)
+    MINUS           reduce using rule 30 (LIT -> TRUE .)
+    EQUALITY        reduce using rule 30 (LIT -> TRUE .)
+    LESS            reduce using rule 30 (LIT -> TRUE .)
+    GREATER         reduce using rule 30 (LIT -> TRUE .)
+    AND             reduce using rule 30 (LIT -> TRUE .)
+    OR              reduce using rule 30 (LIT -> TRUE .)
+    $end            reduce using rule 30 (LIT -> TRUE .)
+    RPAREN          reduce using rule 30 (LIT -> TRUE .)
+
+
+state 17
+
+    (31) LIT -> FALSE .
+
+    COMMA           reduce using rule 31 (LIT -> FALSE .)
+    TIMES           reduce using rule 31 (LIT -> FALSE .)
+    DIVIDE          reduce using rule 31 (LIT -> FALSE .)
+    PLUS            reduce using rule 31 (LIT -> FALSE .)
+    MINUS           reduce using rule 31 (LIT -> FALSE .)
+    EQUALITY        reduce using rule 31 (LIT -> FALSE .)
+    LESS            reduce using rule 31 (LIT -> FALSE .)
+    GREATER         reduce using rule 31 (LIT -> FALSE .)
+    AND             reduce using rule 31 (LIT -> FALSE .)
+    OR              reduce using rule 31 (LIT -> FALSE .)
+    $end            reduce using rule 31 (LIT -> FALSE .)
+    RPAREN          reduce using rule 31 (LIT -> FALSE .)
+
+
+state 18
+
+    (32) LIT -> NUMBER .
+
+    COMMA           reduce using rule 32 (LIT -> NUMBER .)
+    TIMES           reduce using rule 32 (LIT -> NUMBER .)
+    DIVIDE          reduce using rule 32 (LIT -> NUMBER .)
+    PLUS            reduce using rule 32 (LIT -> NUMBER .)
+    MINUS           reduce using rule 32 (LIT -> NUMBER .)
+    EQUALITY        reduce using rule 32 (LIT -> NUMBER .)
+    LESS            reduce using rule 32 (LIT -> NUMBER .)
+    GREATER         reduce using rule 32 (LIT -> NUMBER .)
+    AND             reduce using rule 32 (LIT -> NUMBER .)
+    OR              reduce using rule 32 (LIT -> NUMBER .)
+    $end            reduce using rule 32 (LIT -> NUMBER .)
+    RPAREN          reduce using rule 32 (LIT -> NUMBER .)
+
+
+state 19
+
+    (38) VARID -> DOLLAR . ID
+
+    ID              shift and go to state 37
+
+
+state 20
+
+    (39) GLOBID -> ID .
+
+    LPAREN          reduce using rule 39 (GLOBID -> ID .)
+
+
+state 21
+
+    (10) EXPGLOBID -> GLOBID . EXPWRAPPER
+    (11) EXPWRAPPER -> . LPAREN RPAREN
+    (12) EXPWRAPPER -> . LPAREN EXPS RPAREN
+
+    LPAREN          shift and go to state 39
+
+    EXPWRAPPER                     shift and go to state 38
+
+state 22
+
+    (14) TYPECAST -> LBRACKET . TYPE RBRACKET EXP
+    (40) TYPE -> . INT
+    (41) TYPE -> . FLOAT
+    (42) TYPE -> . CINT
+    (43) TYPE -> . VOID
+    (44) TYPE -> . REF TYPE
+    (45) TYPE -> . NOALIAS REF TYPE
+
+    INT             shift and go to state 41
+    FLOAT           shift and go to state 42
+    CINT            shift and go to state 43
+    VOID            shift and go to state 44
+    REF             shift and go to state 45
+    NOALIAS         shift and go to state 46
+
+    TYPE                           shift and go to state 40
+
+state 23
+
+    (2) EXPS -> EXP COMMA . EXPS
+    (1) EXPS -> . EXP
+    (2) EXPS -> . EXP COMMA EXPS
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 2
+    EXPS                           shift and go to state 47
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 24
+
+    (19) ARITHOPS -> EXP TIMES . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 48
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 25
+
+    (20) ARITHOPS -> EXP DIVIDE . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 49
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 26
+
+    (21) ARITHOPS -> EXP PLUS . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 50
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 27
+
+    (22) ARITHOPS -> EXP MINUS . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 51
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 28
+
+    (23) LOGICOPS -> EXP EQUALITY . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 52
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 29
+
+    (24) LOGICOPS -> EXP LESS . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 53
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 30
+
+    (25) LOGICOPS -> EXP GREATER . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 54
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 31
+
+    (26) LOGICOPS -> EXP AND . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 55
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 32
+
+    (27) LOGICOPS -> EXP OR . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 56
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 33
+
+    (13) ASSIGN -> VARID EQUAL . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    VARID                          shift and go to state 7
+    EXP                            shift and go to state 57
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 34
+
+    (9) EXPPAREN -> LPAREN EXP . RPAREN
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    RPAREN          shift and go to state 58
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+    OR              shift and go to state 32
+
+
+state 35
+
+    (28) UOP -> NOT EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for EQUALITY resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    COMMA           reduce using rule 28 (UOP -> NOT EXP .)
+    $end            reduce using rule 28 (UOP -> NOT EXP .)
+    RPAREN          reduce using rule 28 (UOP -> NOT EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+    OR              shift and go to state 32
+
+  ! TIMES           [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! DIVIDE          [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! PLUS            [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! MINUS           [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! EQUALITY        [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! LESS            [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! GREATER         [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! AND             [ reduce using rule 28 (UOP -> NOT EXP .) ]
+  ! OR              [ reduce using rule 28 (UOP -> NOT EXP .) ]
+
+
+state 36
+
+    (29) UOP -> MINUS EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 29 (UOP -> MINUS EXP .)
+    PLUS            reduce using rule 29 (UOP -> MINUS EXP .)
+    MINUS           reduce using rule 29 (UOP -> MINUS EXP .)
+    EQUALITY        reduce using rule 29 (UOP -> MINUS EXP .)
+    LESS            reduce using rule 29 (UOP -> MINUS EXP .)
+    GREATER         reduce using rule 29 (UOP -> MINUS EXP .)
+    AND             reduce using rule 29 (UOP -> MINUS EXP .)
+    OR              reduce using rule 29 (UOP -> MINUS EXP .)
+    $end            reduce using rule 29 (UOP -> MINUS EXP .)
+    RPAREN          reduce using rule 29 (UOP -> MINUS EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+
+  ! TIMES           [ reduce using rule 29 (UOP -> MINUS EXP .) ]
+  ! DIVIDE          [ reduce using rule 29 (UOP -> MINUS EXP .) ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 37
+
+    (38) VARID -> DOLLAR ID .
+
+    EQUAL           reduce using rule 38 (VARID -> DOLLAR ID .)
+    COMMA           reduce using rule 38 (VARID -> DOLLAR ID .)
+    TIMES           reduce using rule 38 (VARID -> DOLLAR ID .)
+    DIVIDE          reduce using rule 38 (VARID -> DOLLAR ID .)
+    PLUS            reduce using rule 38 (VARID -> DOLLAR ID .)
+    MINUS           reduce using rule 38 (VARID -> DOLLAR ID .)
+    EQUALITY        reduce using rule 38 (VARID -> DOLLAR ID .)
+    LESS            reduce using rule 38 (VARID -> DOLLAR ID .)
+    GREATER         reduce using rule 38 (VARID -> DOLLAR ID .)
+    AND             reduce using rule 38 (VARID -> DOLLAR ID .)
+    OR              reduce using rule 38 (VARID -> DOLLAR ID .)
+    $end            reduce using rule 38 (VARID -> DOLLAR ID .)
+    RPAREN          reduce using rule 38 (VARID -> DOLLAR ID .)
+
+
+state 38
+
+    (10) EXPGLOBID -> GLOBID EXPWRAPPER .
+
+    COMMA           reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    TIMES           reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    DIVIDE          reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    PLUS            reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    MINUS           reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    EQUALITY        reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    LESS            reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    GREATER         reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    AND             reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    OR              reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    $end            reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+    RPAREN          reduce using rule 10 (EXPGLOBID -> GLOBID EXPWRAPPER .)
+
+
+state 39
+
+    (11) EXPWRAPPER -> LPAREN . RPAREN
+    (12) EXPWRAPPER -> LPAREN . EXPS RPAREN
+    (1) EXPS -> . EXP
+    (2) EXPS -> . EXP COMMA EXPS
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    RPAREN          shift and go to state 59
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXPS                           shift and go to state 60
+    EXP                            shift and go to state 2
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 40
+
+    (14) TYPECAST -> LBRACKET TYPE . RBRACKET EXP
+
+    RBRACKET        shift and go to state 61
+
+
+state 41
+
+    (40) TYPE -> INT .
+
+    RBRACKET        reduce using rule 40 (TYPE -> INT .)
+
+
+state 42
+
+    (41) TYPE -> FLOAT .
+
+    RBRACKET        reduce using rule 41 (TYPE -> FLOAT .)
+
+
+state 43
+
+    (42) TYPE -> CINT .
+
+    RBRACKET        reduce using rule 42 (TYPE -> CINT .)
+
+
+state 44
+
+    (43) TYPE -> VOID .
+
+    RBRACKET        reduce using rule 43 (TYPE -> VOID .)
+
+
+state 45
+
+    (44) TYPE -> REF . TYPE
+    (40) TYPE -> . INT
+    (41) TYPE -> . FLOAT
+    (42) TYPE -> . CINT
+    (43) TYPE -> . VOID
+    (44) TYPE -> . REF TYPE
+    (45) TYPE -> . NOALIAS REF TYPE
+
+    INT             shift and go to state 41
+    FLOAT           shift and go to state 42
+    CINT            shift and go to state 43
+    VOID            shift and go to state 44
+    REF             shift and go to state 45
+    NOALIAS         shift and go to state 46
+
+    TYPE                           shift and go to state 62
+
+state 46
+
+    (45) TYPE -> NOALIAS . REF TYPE
+
+    REF             shift and go to state 63
+
+
+state 47
+
+    (2) EXPS -> EXP COMMA EXPS .
+
+    $end            reduce using rule 2 (EXPS -> EXP COMMA EXPS .)
+    RPAREN          reduce using rule 2 (EXPS -> EXP COMMA EXPS .)
+
+
+state 48
+
+    (19) ARITHOPS -> EXP TIMES EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    TIMES           reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    DIVIDE          reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    PLUS            reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    MINUS           reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    EQUALITY        reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    LESS            reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    GREATER         reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    AND             reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    OR              reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    $end            reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+    RPAREN          reduce using rule 19 (ARITHOPS -> EXP TIMES EXP .)
+
+  ! TIMES           [ shift and go to state 24 ]
+  ! DIVIDE          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 49
+
+    (20) ARITHOPS -> EXP DIVIDE EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    TIMES           reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    DIVIDE          reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    PLUS            reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    MINUS           reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    EQUALITY        reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    LESS            reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    GREATER         reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    AND             reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    OR              reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    $end            reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+    RPAREN          reduce using rule 20 (ARITHOPS -> EXP DIVIDE EXP .)
+
+  ! TIMES           [ shift and go to state 24 ]
+  ! DIVIDE          [ shift and go to state 25 ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 50
+
+    (21) ARITHOPS -> EXP PLUS EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    PLUS            reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    MINUS           reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    EQUALITY        reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    LESS            reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    GREATER         reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    AND             reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    OR              reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    $end            reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    RPAREN          reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+
+  ! TIMES           [ reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .) ]
+  ! DIVIDE          [ reduce using rule 21 (ARITHOPS -> EXP PLUS EXP .) ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 51
+
+    (22) ARITHOPS -> EXP MINUS EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    PLUS            reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    MINUS           reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    EQUALITY        reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    LESS            reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    GREATER         reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    AND             reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    OR              reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    $end            reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    RPAREN          reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+
+  ! TIMES           [ reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .) ]
+  ! DIVIDE          [ reduce using rule 22 (ARITHOPS -> EXP MINUS EXP .) ]
+  ! PLUS            [ shift and go to state 26 ]
+  ! MINUS           [ shift and go to state 27 ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 52
+
+    (23) LOGICOPS -> EXP EQUALITY EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    EQUALITY        reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    AND             reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    OR              reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    $end            reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    RPAREN          reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+
+  ! TIMES           [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! DIVIDE          [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! PLUS            [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! MINUS           [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! LESS            [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! GREATER         [ reduce using rule 23 (LOGICOPS -> EXP EQUALITY EXP .) ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 53
+
+    (24) LOGICOPS -> EXP LESS EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    EQUALITY        reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    LESS            reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    GREATER         reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    AND             reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    OR              reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    $end            reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    RPAREN          reduce using rule 24 (LOGICOPS -> EXP LESS EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+  ! TIMES           [ reduce using rule 24 (LOGICOPS -> EXP LESS EXP .) ]
+  ! DIVIDE          [ reduce using rule 24 (LOGICOPS -> EXP LESS EXP .) ]
+  ! PLUS            [ reduce using rule 24 (LOGICOPS -> EXP LESS EXP .) ]
+  ! MINUS           [ reduce using rule 24 (LOGICOPS -> EXP LESS EXP .) ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 54
+
+    (25) LOGICOPS -> EXP GREATER EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    EQUALITY        reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    LESS            reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    GREATER         reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    AND             reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    OR              reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    $end            reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    RPAREN          reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+
+  ! TIMES           [ reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .) ]
+  ! DIVIDE          [ reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .) ]
+  ! PLUS            [ reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .) ]
+  ! MINUS           [ reduce using rule 25 (LOGICOPS -> EXP GREATER EXP .) ]
+  ! EQUALITY        [ shift and go to state 28 ]
+  ! LESS            [ shift and go to state 29 ]
+  ! GREATER         [ shift and go to state 30 ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 55
+
+    (26) LOGICOPS -> EXP AND EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 26 (LOGICOPS -> EXP AND EXP .)
+    AND             reduce using rule 26 (LOGICOPS -> EXP AND EXP .)
+    OR              reduce using rule 26 (LOGICOPS -> EXP AND EXP .)
+    $end            reduce using rule 26 (LOGICOPS -> EXP AND EXP .)
+    RPAREN          reduce using rule 26 (LOGICOPS -> EXP AND EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+
+  ! TIMES           [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! DIVIDE          [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! PLUS            [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! MINUS           [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! EQUALITY        [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! LESS            [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! GREATER         [ reduce using rule 26 (LOGICOPS -> EXP AND EXP .) ]
+  ! AND             [ shift and go to state 31 ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 56
+
+    (27) LOGICOPS -> EXP OR EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 27 (LOGICOPS -> EXP OR EXP .)
+    OR              reduce using rule 27 (LOGICOPS -> EXP OR EXP .)
+    $end            reduce using rule 27 (LOGICOPS -> EXP OR EXP .)
+    RPAREN          reduce using rule 27 (LOGICOPS -> EXP OR EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+
+  ! TIMES           [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! DIVIDE          [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! PLUS            [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! MINUS           [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! EQUALITY        [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! LESS            [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! GREATER         [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! AND             [ reduce using rule 27 (LOGICOPS -> EXP OR EXP .) ]
+  ! OR              [ shift and go to state 32 ]
+
+
+state 57
+
+    (13) ASSIGN -> VARID EQUAL EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+    COMMA           reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .)
+    $end            reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .)
+    RPAREN          reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+    OR              shift and go to state 32
+
+  ! TIMES           [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! DIVIDE          [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! PLUS            [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! MINUS           [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! EQUALITY        [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! LESS            [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! GREATER         [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! AND             [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+  ! OR              [ reduce using rule 13 (ASSIGN -> VARID EQUAL EXP .) ]
+
+
+state 58
+
+    (9) EXPPAREN -> LPAREN EXP RPAREN .
+
+    COMMA           reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    TIMES           reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    DIVIDE          reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    PLUS            reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    MINUS           reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    EQUALITY        reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    LESS            reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    GREATER         reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    AND             reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    OR              reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    $end            reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+    RPAREN          reduce using rule 9 (EXPPAREN -> LPAREN EXP RPAREN .)
+
+
+state 59
+
+    (11) EXPWRAPPER -> LPAREN RPAREN .
+
+    COMMA           reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    TIMES           reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    DIVIDE          reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    PLUS            reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    MINUS           reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    EQUALITY        reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    LESS            reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    GREATER         reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    AND             reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    OR              reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    $end            reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+    RPAREN          reduce using rule 11 (EXPWRAPPER -> LPAREN RPAREN .)
+
+
+state 60
+
+    (12) EXPWRAPPER -> LPAREN EXPS . RPAREN
+
+    RPAREN          shift and go to state 64
+
+
+state 61
+
+    (14) TYPECAST -> LBRACKET TYPE RBRACKET . EXP
+    (3) EXP -> . EXPPAREN
+    (4) EXP -> . BINOP
+    (5) EXP -> . UOP
+    (6) EXP -> . LIT
+    (7) EXP -> . VARID
+    (8) EXP -> . EXPGLOBID
+    (9) EXPPAREN -> . LPAREN EXP RPAREN
+    (15) BINOP -> . ARITHOPS
+    (16) BINOP -> . LOGICOPS
+    (17) BINOP -> . ASSIGN
+    (18) BINOP -> . TYPECAST
+    (28) UOP -> . NOT EXP
+    (29) UOP -> . MINUS EXP
+    (30) LIT -> . TRUE
+    (31) LIT -> . FALSE
+    (32) LIT -> . NUMBER
+    (38) VARID -> . DOLLAR ID
+    (10) EXPGLOBID -> . GLOBID EXPWRAPPER
+    (19) ARITHOPS -> . EXP TIMES EXP
+    (20) ARITHOPS -> . EXP DIVIDE EXP
+    (21) ARITHOPS -> . EXP PLUS EXP
+    (22) ARITHOPS -> . EXP MINUS EXP
+    (23) LOGICOPS -> . EXP EQUALITY EXP
+    (24) LOGICOPS -> . EXP LESS EXP
+    (25) LOGICOPS -> . EXP GREATER EXP
+    (26) LOGICOPS -> . EXP AND EXP
+    (27) LOGICOPS -> . EXP OR EXP
+    (13) ASSIGN -> . VARID EQUAL EXP
+    (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
+    (39) GLOBID -> . ID
+
+    LPAREN          shift and go to state 9
+    NOT             shift and go to state 14
+    MINUS           shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    NUMBER          shift and go to state 18
+    DOLLAR          shift and go to state 19
+    LBRACKET        shift and go to state 22
+    ID              shift and go to state 20
+
+    EXP                            shift and go to state 65
+    EXPPAREN                       shift and go to state 3
+    BINOP                          shift and go to state 4
+    UOP                            shift and go to state 5
+    LIT                            shift and go to state 6
+    VARID                          shift and go to state 7
+    EXPGLOBID                      shift and go to state 8
+    ARITHOPS                       shift and go to state 10
+    LOGICOPS                       shift and go to state 11
+    ASSIGN                         shift and go to state 12
+    TYPECAST                       shift and go to state 13
+    GLOBID                         shift and go to state 21
+
+state 62
+
+    (44) TYPE -> REF TYPE .
+
+    RBRACKET        reduce using rule 44 (TYPE -> REF TYPE .)
+
+
+state 63
+
+    (45) TYPE -> NOALIAS REF . TYPE
+    (40) TYPE -> . INT
+    (41) TYPE -> . FLOAT
+    (42) TYPE -> . CINT
+    (43) TYPE -> . VOID
+    (44) TYPE -> . REF TYPE
+    (45) TYPE -> . NOALIAS REF TYPE
+
+    INT             shift and go to state 41
+    FLOAT           shift and go to state 42
+    CINT            shift and go to state 43
+    VOID            shift and go to state 44
+    REF             shift and go to state 45
+    NOALIAS         shift and go to state 46
+
+    TYPE                           shift and go to state 66
+
+state 64
+
+    (12) EXPWRAPPER -> LPAREN EXPS RPAREN .
+
+    COMMA           reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    TIMES           reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    DIVIDE          reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    PLUS            reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    MINUS           reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    EQUALITY        reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    LESS            reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    GREATER         reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    AND             reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    OR              reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    $end            reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+    RPAREN          reduce using rule 12 (EXPWRAPPER -> LPAREN EXPS RPAREN .)
+
+
+state 65
+
+    (14) TYPECAST -> LBRACKET TYPE RBRACKET EXP .
+    (19) ARITHOPS -> EXP . TIMES EXP
+    (20) ARITHOPS -> EXP . DIVIDE EXP
+    (21) ARITHOPS -> EXP . PLUS EXP
+    (22) ARITHOPS -> EXP . MINUS EXP
+    (23) LOGICOPS -> EXP . EQUALITY EXP
+    (24) LOGICOPS -> EXP . LESS EXP
+    (25) LOGICOPS -> EXP . GREATER EXP
+    (26) LOGICOPS -> EXP . AND EXP
+    (27) LOGICOPS -> EXP . OR EXP
+
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for EQUALITY resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    COMMA           reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .)
+    $end            reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .)
+    RPAREN          reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .)
+    TIMES           shift and go to state 24
+    DIVIDE          shift and go to state 25
+    PLUS            shift and go to state 26
+    MINUS           shift and go to state 27
+    EQUALITY        shift and go to state 28
+    LESS            shift and go to state 29
+    GREATER         shift and go to state 30
+    AND             shift and go to state 31
+    OR              shift and go to state 32
+
+  ! TIMES           [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! DIVIDE          [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! PLUS            [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! MINUS           [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! EQUALITY        [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! LESS            [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! GREATER         [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! AND             [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+  ! OR              [ reduce using rule 14 (TYPECAST -> LBRACKET TYPE RBRACKET EXP .) ]
+
+
+state 66
+
+    (45) TYPE -> NOALIAS REF TYPE .
+
+    RBRACKET        reduce using rule 45 (TYPE -> NOALIAS REF TYPE .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for TIMES in state 35 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 35 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 35 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 35 resolved as shift
+WARNING: shift/reduce conflict for EQUALITY in state 35 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 35 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 35 resolved as shift
+WARNING: shift/reduce conflict for AND in state 35 resolved as shift
+WARNING: shift/reduce conflict for OR in state 35 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 65 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 65 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 65 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 65 resolved as shift
+WARNING: shift/reduce conflict for EQUALITY in state 65 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 65 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 65 resolved as shift
+WARNING: shift/reduce conflict for AND in state 65 resolved as shift
+WARNING: shift/reduce conflict for OR in state 65 resolved as shift
