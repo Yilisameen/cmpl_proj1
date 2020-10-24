@@ -4,354 +4,261 @@ Unused terminals:
 
     AND
     BOOL
-    CINT
-    COMMA
     DEF
-    DOLLAR
+    DIVIDE
     ELSE
     EQUAL
     EQUALITY
     EXTERN
     FALSE
-    FLOAT
     GREATER
-    ID
     IF
-    INT
     LBRACE
     LBRACKET
     LESS
-    NOALIAS
+    LPAREN
+    MINUS
     NOT
+    NUMBER
     OR
+    PLUS
     PRINT
     RBRACE
     RBRACKET
-    REF
     RETURN
+    RPAREN
     SEMICOLON
     SLIT
+    TIMES
     TRUE
-    VOID
     WHILE
 
 Grammar
 
-Rule 0     S' -> expression
-Rule 1     expression -> expression PLUS expression
-Rule 2     expression -> expression MINUS expression
-Rule 3     expression -> expression TIMES expression
-Rule 4     expression -> expression DIVIDE expression
-Rule 5     expression -> LPAREN expression RPAREN
-Rule 6     expression -> NUMBER
+Rule 0     S' -> TDECLS
+Rule 1     TDECLS -> TYPE
+Rule 2     TDECLS -> TYPE COMMA TDECLS
+Rule 3     VDECLS -> VDECL COMMA VDECLS
+Rule 4     VDECLS -> VDECL
+Rule 5     VDECL -> TYPE VARID
+Rule 6     VARID -> DOLLAR ID
+Rule 7     GLOBID -> ID
+Rule 8     TYPE -> INT
+Rule 9     TYPE -> FLOAT
+Rule 10    TYPE -> CINT
+Rule 11    TYPE -> VOID
+Rule 12    TYPE -> REF TYPE
+Rule 13    TYPE -> NOALIAS REF TYPE
 
 Terminals, with rules where they appear
 
 AND                  : 
 BOOL                 : 
-CINT                 : 
-COMMA                : 
+CINT                 : 10
+COMMA                : 2 3
 DEF                  : 
-DIVIDE               : 4
-DOLLAR               : 
+DIVIDE               : 
+DOLLAR               : 6
 ELSE                 : 
 EQUAL                : 
 EQUALITY             : 
 EXTERN               : 
 FALSE                : 
-FLOAT                : 
+FLOAT                : 9
 GREATER              : 
-ID                   : 
+ID                   : 6 7
 IF                   : 
-INT                  : 
+INT                  : 8
 LBRACE               : 
 LBRACKET             : 
 LESS                 : 
-LPAREN               : 5
-MINUS                : 2
-NOALIAS              : 
+LPAREN               : 
+MINUS                : 
+NOALIAS              : 13
 NOT                  : 
-NUMBER               : 6
+NUMBER               : 
 OR                   : 
-PLUS                 : 1
+PLUS                 : 
 PRINT                : 
 RBRACE               : 
 RBRACKET             : 
-REF                  : 
+REF                  : 12 13
 RETURN               : 
-RPAREN               : 5
+RPAREN               : 
 SEMICOLON            : 
 SLIT                 : 
-TIMES                : 3
+TIMES                : 
 TRUE                 : 
-VOID                 : 
+VOID                 : 11
 WHILE                : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-expression           : 1 1 2 2 3 3 4 4 5 0
+GLOBID               : 
+TDECLS               : 2 0
+TYPE                 : 1 2 5 12 13
+VARID                : 5
+VDECL                : 3 4
+VDECLS               : 3
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . expression
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (0) S' -> . TDECLS
+    (1) TDECLS -> . TYPE
+    (2) TDECLS -> . TYPE COMMA TDECLS
+    (8) TYPE -> . INT
+    (9) TYPE -> . FLOAT
+    (10) TYPE -> . CINT
+    (11) TYPE -> . VOID
+    (12) TYPE -> . REF TYPE
+    (13) TYPE -> . NOALIAS REF TYPE
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    INT             shift and go to state 3
+    FLOAT           shift and go to state 4
+    CINT            shift and go to state 5
+    VOID            shift and go to state 6
+    REF             shift and go to state 7
+    NOALIAS         shift and go to state 8
 
-    expression                     shift and go to state 1
+    TDECLS                         shift and go to state 1
+    TYPE                           shift and go to state 2
 
 state 1
 
-    (0) S' -> expression .
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (0) S' -> TDECLS .
 
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
 
 
 state 2
 
-    (5) expression -> LPAREN . expression RPAREN
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (1) TDECLS -> TYPE .
+    (2) TDECLS -> TYPE . COMMA TDECLS
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    $end            reduce using rule 1 (TDECLS -> TYPE .)
+    COMMA           shift and go to state 9
 
-    expression                     shift and go to state 8
 
 state 3
 
-    (6) expression -> NUMBER .
+    (8) TYPE -> INT .
 
-    PLUS            reduce using rule 6 (expression -> NUMBER .)
-    MINUS           reduce using rule 6 (expression -> NUMBER .)
-    TIMES           reduce using rule 6 (expression -> NUMBER .)
-    DIVIDE          reduce using rule 6 (expression -> NUMBER .)
-    $end            reduce using rule 6 (expression -> NUMBER .)
-    RPAREN          reduce using rule 6 (expression -> NUMBER .)
+    COMMA           reduce using rule 8 (TYPE -> INT .)
+    $end            reduce using rule 8 (TYPE -> INT .)
 
 
 state 4
 
-    (1) expression -> expression PLUS . expression
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (9) TYPE -> FLOAT .
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    COMMA           reduce using rule 9 (TYPE -> FLOAT .)
+    $end            reduce using rule 9 (TYPE -> FLOAT .)
 
-    expression                     shift and go to state 9
 
 state 5
 
-    (2) expression -> expression MINUS . expression
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (10) TYPE -> CINT .
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    COMMA           reduce using rule 10 (TYPE -> CINT .)
+    $end            reduce using rule 10 (TYPE -> CINT .)
 
-    expression                     shift and go to state 10
 
 state 6
 
-    (3) expression -> expression TIMES . expression
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (11) TYPE -> VOID .
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    COMMA           reduce using rule 11 (TYPE -> VOID .)
+    $end            reduce using rule 11 (TYPE -> VOID .)
 
-    expression                     shift and go to state 11
 
 state 7
 
-    (4) expression -> expression DIVIDE . expression
-    (1) expression -> . expression PLUS expression
-    (2) expression -> . expression MINUS expression
-    (3) expression -> . expression TIMES expression
-    (4) expression -> . expression DIVIDE expression
-    (5) expression -> . LPAREN expression RPAREN
-    (6) expression -> . NUMBER
+    (12) TYPE -> REF . TYPE
+    (8) TYPE -> . INT
+    (9) TYPE -> . FLOAT
+    (10) TYPE -> . CINT
+    (11) TYPE -> . VOID
+    (12) TYPE -> . REF TYPE
+    (13) TYPE -> . NOALIAS REF TYPE
 
-    LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 3
+    INT             shift and go to state 3
+    FLOAT           shift and go to state 4
+    CINT            shift and go to state 5
+    VOID            shift and go to state 6
+    REF             shift and go to state 7
+    NOALIAS         shift and go to state 8
 
-    expression                     shift and go to state 12
+    TYPE                           shift and go to state 10
 
 state 8
 
-    (5) expression -> LPAREN expression . RPAREN
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (13) TYPE -> NOALIAS . REF TYPE
 
-    RPAREN          shift and go to state 13
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
+    REF             shift and go to state 11
 
 
 state 9
 
-    (1) expression -> expression PLUS expression .
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (2) TDECLS -> TYPE COMMA . TDECLS
+    (1) TDECLS -> . TYPE
+    (2) TDECLS -> . TYPE COMMA TDECLS
+    (8) TYPE -> . INT
+    (9) TYPE -> . FLOAT
+    (10) TYPE -> . CINT
+    (11) TYPE -> . VOID
+    (12) TYPE -> . REF TYPE
+    (13) TYPE -> . NOALIAS REF TYPE
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-    $end            reduce using rule 1 (expression -> expression PLUS expression .)
-    RPAREN          reduce using rule 1 (expression -> expression PLUS expression .)
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
+    INT             shift and go to state 3
+    FLOAT           shift and go to state 4
+    CINT            shift and go to state 5
+    VOID            shift and go to state 6
+    REF             shift and go to state 7
+    NOALIAS         shift and go to state 8
 
-  ! PLUS            [ reduce using rule 1 (expression -> expression PLUS expression .) ]
-  ! MINUS           [ reduce using rule 1 (expression -> expression PLUS expression .) ]
-  ! TIMES           [ reduce using rule 1 (expression -> expression PLUS expression .) ]
-  ! DIVIDE          [ reduce using rule 1 (expression -> expression PLUS expression .) ]
-
+    TYPE                           shift and go to state 2
+    TDECLS                         shift and go to state 12
 
 state 10
 
-    (2) expression -> expression MINUS expression .
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (12) TYPE -> REF TYPE .
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-    $end            reduce using rule 2 (expression -> expression MINUS expression .)
-    RPAREN          reduce using rule 2 (expression -> expression MINUS expression .)
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
-
-  ! PLUS            [ reduce using rule 2 (expression -> expression MINUS expression .) ]
-  ! MINUS           [ reduce using rule 2 (expression -> expression MINUS expression .) ]
-  ! TIMES           [ reduce using rule 2 (expression -> expression MINUS expression .) ]
-  ! DIVIDE          [ reduce using rule 2 (expression -> expression MINUS expression .) ]
+    COMMA           reduce using rule 12 (TYPE -> REF TYPE .)
+    $end            reduce using rule 12 (TYPE -> REF TYPE .)
 
 
 state 11
 
-    (3) expression -> expression TIMES expression .
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (13) TYPE -> NOALIAS REF . TYPE
+    (8) TYPE -> . INT
+    (9) TYPE -> . FLOAT
+    (10) TYPE -> . CINT
+    (11) TYPE -> . VOID
+    (12) TYPE -> . REF TYPE
+    (13) TYPE -> . NOALIAS REF TYPE
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-    $end            reduce using rule 3 (expression -> expression TIMES expression .)
-    RPAREN          reduce using rule 3 (expression -> expression TIMES expression .)
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
+    INT             shift and go to state 3
+    FLOAT           shift and go to state 4
+    CINT            shift and go to state 5
+    VOID            shift and go to state 6
+    REF             shift and go to state 7
+    NOALIAS         shift and go to state 8
 
-  ! PLUS            [ reduce using rule 3 (expression -> expression TIMES expression .) ]
-  ! MINUS           [ reduce using rule 3 (expression -> expression TIMES expression .) ]
-  ! TIMES           [ reduce using rule 3 (expression -> expression TIMES expression .) ]
-  ! DIVIDE          [ reduce using rule 3 (expression -> expression TIMES expression .) ]
-
+    TYPE                           shift and go to state 13
 
 state 12
 
-    (4) expression -> expression DIVIDE expression .
-    (1) expression -> expression . PLUS expression
-    (2) expression -> expression . MINUS expression
-    (3) expression -> expression . TIMES expression
-    (4) expression -> expression . DIVIDE expression
+    (2) TDECLS -> TYPE COMMA TDECLS .
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for TIMES resolved as shift
-  ! shift/reduce conflict for DIVIDE resolved as shift
-    $end            reduce using rule 4 (expression -> expression DIVIDE expression .)
-    RPAREN          reduce using rule 4 (expression -> expression DIVIDE expression .)
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
-    TIMES           shift and go to state 6
-    DIVIDE          shift and go to state 7
-
-  ! PLUS            [ reduce using rule 4 (expression -> expression DIVIDE expression .) ]
-  ! MINUS           [ reduce using rule 4 (expression -> expression DIVIDE expression .) ]
-  ! TIMES           [ reduce using rule 4 (expression -> expression DIVIDE expression .) ]
-  ! DIVIDE          [ reduce using rule 4 (expression -> expression DIVIDE expression .) ]
+    $end            reduce using rule 2 (TDECLS -> TYPE COMMA TDECLS .)
 
 
 state 13
 
-    (5) expression -> LPAREN expression RPAREN .
+    (13) TYPE -> NOALIAS REF TYPE .
 
-    PLUS            reduce using rule 5 (expression -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 5 (expression -> LPAREN expression RPAREN .)
-    TIMES           reduce using rule 5 (expression -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 5 (expression -> LPAREN expression RPAREN .)
-    $end            reduce using rule 5 (expression -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 5 (expression -> LPAREN expression RPAREN .)
+    COMMA           reduce using rule 13 (TYPE -> NOALIAS REF TYPE .)
+    $end            reduce using rule 13 (TYPE -> NOALIAS REF TYPE .)
 
-WARNING: 
-WARNING: Conflicts:
-WARNING: 
-WARNING: shift/reduce conflict for PLUS in state 9 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 9 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 9 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 9 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 10 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 10 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 10 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 10 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 11 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 11 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 11 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 11 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 12 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 12 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 12 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 12 resolved as shift

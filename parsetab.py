@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'expressionAND BOOL CINT COMMA DEF DIVIDE DOLLAR ELSE EQUAL EQUALITY EXTERN FALSE FLOAT GREATER ID IF INT LBRACE LBRACKET LESS LPAREN MINUS NOALIAS NOT NUMBER OR PLUS PRINT RBRACE RBRACKET REF RETURN RPAREN SEMICOLON SLIT TIMES TRUE VOID WHILEexpression : expression PLUS expression\n                  | expression MINUS expression\n                  | expression TIMES expression\n                  | expression DIVIDE expressionexpression : LPAREN expression RPARENexpression : NUMBER'
+_lr_signature = 'TDECLSAND BOOL CINT COMMA DEF DIVIDE DOLLAR ELSE EQUAL EQUALITY EXTERN FALSE FLOAT GREATER ID IF INT LBRACE LBRACKET LESS LPAREN MINUS NOALIAS NOT NUMBER OR PLUS PRINT RBRACE RBRACKET REF RETURN RPAREN SEMICOLON SLIT TIMES TRUE VOID WHILETDECLS : TYPE\n                | TYPE COMMA TDECLSVDECLS : VDECL COMMA VDECLS\n            | VDECLVDECL : TYPE VARIDVARID : DOLLAR IDGLOBID : IDTYPE : INT\n          | FLOAT\n          | CINT\n          | VOIDTYPE : REF TYPETYPE : NOALIAS REF TYPE'
     
-_lr_action_items = {'LPAREN':([0,2,4,5,6,7,],[2,2,2,2,2,2,]),'NUMBER':([0,2,4,5,6,7,],[3,3,3,3,3,3,]),'$end':([1,3,9,10,11,12,13,],[0,-6,-1,-2,-3,-4,-5,]),'PLUS':([1,3,8,9,10,11,12,13,],[4,-6,4,4,4,4,4,-5,]),'MINUS':([1,3,8,9,10,11,12,13,],[5,-6,5,5,5,5,5,-5,]),'TIMES':([1,3,8,9,10,11,12,13,],[6,-6,6,6,6,6,6,-5,]),'DIVIDE':([1,3,8,9,10,11,12,13,],[7,-6,7,7,7,7,7,-5,]),'RPAREN':([3,8,9,10,11,12,13,],[-6,13,-1,-2,-3,-4,-5,]),}
+_lr_action_items = {'INT':([0,7,9,11,],[3,3,3,3,]),'FLOAT':([0,7,9,11,],[4,4,4,4,]),'CINT':([0,7,9,11,],[5,5,5,5,]),'VOID':([0,7,9,11,],[6,6,6,6,]),'REF':([0,7,8,9,11,],[7,7,11,7,7,]),'NOALIAS':([0,7,9,11,],[8,8,8,8,]),'$end':([1,2,3,4,5,6,10,12,13,],[0,-1,-8,-9,-10,-11,-12,-2,-13,]),'COMMA':([2,3,4,5,6,10,13,],[9,-8,-9,-10,-11,-12,-13,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'expression':([0,2,4,5,6,7,],[1,8,9,10,11,12,]),}
+_lr_goto_items = {'TDECLS':([0,9,],[1,12,]),'TYPE':([0,7,9,11,],[2,10,2,13,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,11 +26,18 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_binop','parser.py',26),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_binop','parser.py',27),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_binop','parser.py',28),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','parser.py',29),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','parser.py',34),
-  ('expression -> NUMBER','expression',1,'p_expression_number','parser.py',38),
+  ("S' -> TDECLS","S'",1,None,None,None),
+  ('TDECLS -> TYPE','TDECLS',1,'p_tdecls','parser.py',23),
+  ('TDECLS -> TYPE COMMA TDECLS','TDECLS',3,'p_tdecls','parser.py',24),
+  ('VDECLS -> VDECL COMMA VDECLS','VDECLS',3,'p_vdecls','parser.py',53),
+  ('VDECLS -> VDECL','VDECLS',1,'p_vdecls','parser.py',54),
+  ('VDECL -> TYPE VARID','VDECL',2,'p_vdecl','parser.py',76),
+  ('VARID -> DOLLAR ID','VARID',2,'p_varid','parser.py',87),
+  ('GLOBID -> ID','GLOBID',1,'p_globid','parser.py',100),
+  ('TYPE -> INT','TYPE',1,'p_simpleType','parser.py',112),
+  ('TYPE -> FLOAT','TYPE',1,'p_simpleType','parser.py',113),
+  ('TYPE -> CINT','TYPE',1,'p_simpleType','parser.py',114),
+  ('TYPE -> VOID','TYPE',1,'p_simpleType','parser.py',115),
+  ('TYPE -> REF TYPE','TYPE',2,'p_refType','parser.py',119),
+  ('TYPE -> NOALIAS REF TYPE','TYPE',3,'p_refTypeNoAlias','parser.py',124),
 ]
