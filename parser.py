@@ -711,6 +711,9 @@ def p_globid(p):
     '''GLOBID : ID'''
     p[0] = GlobalID(p[1])
 
+def p_error(p):
+    print(f"Syntax error")
+
 
 
 precedence = (
@@ -724,53 +727,4 @@ precedence = (
     ('left', 'TIMES','DIVIDE'),
 )
 
-data = '''
-extern int getarg(int);
-extern float getargf(int);
-
-def int fib (int $n) {
-    if ($n < 2)
-        if ($n == 0)
-            return 0;
-        else
-            return 1;
-    
-    int $a = fib ($n - 1);
-    int $b = fib ($n - 2);
-    return $a + $b;
-}
-
-def void inc (ref int $n) {
-  $n = $n + 1;
-}
-
-def void things (ref int $n) {
-  while (!($n > 100)) {
-    $n = $n * $n - 2;
-  }
-}
-
-def int run () {
-    print "fib(5):";
-    int $val = fib(5);
-    print $val;
-    
-    print "fib(5)+1:";
-    inc($val);
-    print $val;
-
-    print "something else:";
-    things($val);
-    print $val;
-
-
-    return 0;
-}
-'''
-
-def p_error(p):
-    print(f"Syntax error")
-
 yacc.yacc()
-ast = yacc.parse(data, debug = False)
-print(ast)
