@@ -14,7 +14,7 @@ class Progress:
     def add_extern(self, extern):
         self.externs.add(extern)
 
-    def __repr__(self):
+    def yaml_format(self):
         res = 'name: prog\n'
         res = res + '  funcs:\n'
         res = res + self.funcs.yaml_format('    ')
