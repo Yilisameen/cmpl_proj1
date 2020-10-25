@@ -2,6 +2,215 @@ import ply.yacc as yacc
 
 from lexer import tokens
 
+class Progress:
+    def __init__(self, funcs, externs=[]):
+        self.type = 'progress'
+        self.funcs = Functions(funcs)
+        self.externs = Externals(externs)
+
+    def add_func(self, func):
+        self.funcs.add(func)
+
+    def add_extern(self, extern):
+        self.externs.add(extern)
+
+    def __repr__(self):
+        res = 'name: prog\n'
+        res = res + '  funcs:\n'
+        res = res + self.funcs.yaml_format('    ')
+
+        if self.externs.externs:
+            res = res + '  externs:\n'
+            res = res + self.externs.yaml_format('    ')
+
+        return res
+
+class Function:
+    type = 'function'
+    def __init__(self, ret_type, globid, blk, vdecls=None):
+        self.ret_type = ret_type
+        self.globid = globid
+        self.blk = blk
+        self.vdecls = vdecls
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: func\n'
+        res = res + prefix + 'ret_type: ' + self.ret_type + '\n'
+        res = res + prefix + 'globid: ' + self.globid + '\n'
+        res = res + prefix + 'blk:\n'
+        res = res + self.blk.yaml_format(prefix + '  ')
+        if self.vdecls:
+            res = res + prefix + 'vdecls:\n'
+            res = res + self.vdecls.yaml_format(prefix + '  ')
+        return res
+
+class Functions:
+    def __init__(self, functions):
+        self.type = 'functions'
+        self.functions = functions
+
+    def add(self, func):
+        self.functions.append(func)
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: funcs\n'
+        res = res + prefix + 'funcs:\n'
+        for func in self.functions:
+            res = res + prefix + '  '+ '-\n'
+            res = res + func.yaml_format(prefix + '    ')
+        return res
+
+class External:
+    type = 'external'
+    def __init__(self, ret_type, globid, tdecls=None):
+        self.ret_type = ret_type
+        self.globid = globid
+        self.tdecls = tdecls
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: extern\n'
+        res = res + prefix + 'ret_type: ' + self.ret_type + '\n'
+        res = res + prefix + 'globid: ' + self.globid + '\n'
+        if self.tdecls:
+            res = res + prefix + 'tdecls:\n'
+            res = res + self.tdecls.yaml_format(prefix + '  ')
+        return res
+
+class Externals:
+    def __init__(self, externs):
+        self.type = 'externs'
+        self.externs = externs
+
+    def add(self, extern):
+        self.externs.append(extern)
+
+    def yaml_format(self, prefix=''):
+        res = prefix + 'name: externs\n'
+        res = res + prefix + 'externs:\n'
+
+        for extern in self.externs:
+            res = res + prefix + '  '+ '-\n'
+            res = res + extern.yaml_format(prefix + '    ')
+        return res
+
+class Blk:
+    def __init__(self, stmts=[]):
+        self.stmts = Statements(stmts)
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: blk\n'
+        if self.stmts.stmts:
+            res = res + prefix + 'contents:\n'
+            res = res + self.stmts.yaml_format(prefix + '  ')
+        return res
+
+class Statements:
+    def __init__(self, stmts=[]):
+        self.stmts = stmts
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: stmts\n'
+        res = res + prefix + 'stmts:\n'
+        for stmt in self.stmts:
+            res = res + prefix + '  ' + '-\n'
+            res = res + stmt.yaml_format(prefix + '    ')
+        return res
+
+class BlkStatement:
+    def __init__(self, blk):
+        self.blk = blk 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: blk\n'
+        res = res + prefix + 'blk:\n'
+        res = res + self.blk.yaml_format(prefix + '  ')
+        return res
+
+class ReturnStatement:
+    def __init__(self, exp=None):
+        self.exp = exp
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: ret\n'
+
+        if self.exp:
+            res = res + prefix + 'exp:\n'
+            res = res + self.exp.yaml_format(prefix + '  ')
+
+        return res
+
+class VDeclStatement:
+    def __init__(self, vdecl, exp):
+        self.vdecl = vdecl
+        self.exp = exp 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: vardeclstmt\n'
+        res = res + prefix + 'vdecl:\n'
+        res = res + self.vdecl.yaml_format(prefix + '  ')
+        res = res + prefix + 'exp:\n'
+        res = res + self.exp.yaml_format(prefix + '  ')
+        return res
+
+class ExpSemiStatement:
+    def __init__(self, exp):
+        self.exp = exp 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: expstmt\n'
+        res = res + prefix + 'exp:\n'
+        res = res + self.exp.yaml_format(prefix + '  ')
+        return res
+
+class WhileStatement:
+    def __init__(self, exp, stmt):
+        self.exp = exp 
+        self.stmt = stmt 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: while\n'
+        res = res + prefix + 'cond:\n'
+        res = res + self.exp.yaml_format(prefix + '  ')
+        res = res + prefix + 'stmt:\n'
+        res = res + self.stmt.yaml_format(prefix + '  ')
+        return res
+
+class IfStatement:
+    def __init__(self, exp, stmt1, stmt2=None):
+        self.exp = exp
+        self.stmt1 = stmt1
+        self.stmt2 = stmt2
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: if\n'
+        res = res + prefix + 'cond:\n'
+        res = res + self.exp.yaml_format(prefix + '  ')
+        res = res + prefix + 'stmt:\n'
+        res = res + self.stmt1.yaml_format(prefix + '  ')
+        if self.stmt2:
+            res = res + prefix + 'else_stmt:\n'
+            res = res + self.stmt2.yaml_format(prefix + '  ')
+        return res 
+
+class PrintExpStatement:
+    def __init__(self, exp):
+        self.exp = exp 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: print\n'
+        res = res + prefix + 'exp:\n'
+        res = res + self.exp.yaml_format(prefix + '  ')
+        return res
+
+class PrintSLitStatement:
+    def __init__(self, slit):
+        self.slit = slit 
+
+    def yaml_format(self, prefix):
+        res = prefix + 'name: printslit\n'
+        res = res + prefix + 'string: ' + self.slit + '\n'
+        return res
+
 class Exps:
     def __init__(self, exp):
         self.exps = []
@@ -72,7 +281,6 @@ class ExpGlobID:
             res = res + prefix + 'params: \n'
             res = res + self.params.yaml_format(prefix + ' ')
         return res
-
 
 class Assign:
     def __init__(self, var, exp):
@@ -181,7 +389,7 @@ class Vdecls:
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: vdecls\n'
-        res = res + 'vars:\n'
+        res = res + prefix + 'vars:\n'
         prefix = prefix + ' '
         for i in range(0, len(self.vars)):
             res = res + prefix + '-\n'
@@ -228,6 +436,136 @@ class Type:
 
 
 ### funcs ###
+def p_prog(p):
+    """
+    PROG : FUNCS
+        | EXTERNS FUNCS
+    """
+    if len(p) == 2:
+        p[0] = Progress(p[1])
+    else:
+        p[0] = Progress(p[2], p[1])
+
+def p_externs(p):
+    '''
+    EXTERNS : EXTERNSTS 
+            | EXTERNSTS EXTERNS
+    '''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[2].append(p[1])
+        p[0] = p[2]
+
+
+def p_funcs(p):
+    '''
+    FUNCS : FUNC
+        | FUNC FUNCS
+    '''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[2].append(p[1])
+        p[0] = p[2]
+
+def p_extern(p):
+    '''
+    EXTERNSTS : EXTERN TYPE ID LPAREN RPAREN SEMICOLON
+            | EXTERN TYPE ID LPAREN TDECLS RPAREN SEMICOLON
+    '''
+    if len(p) == 7:
+        p[0] = External(p[2].value, p[3])
+    else:
+        p[0] = External(p[2].value, p[3], p[5])
+
+def p_func(p):
+    '''
+    FUNC : DEF TYPE ID LPAREN RPAREN BLK
+    FUNC : DEF TYPE ID LPAREN VDECLS RPAREN BLK
+    '''
+    if len(p) == 7:
+        p[0] = Function(p[2].value, p[3], p[6])
+    else:
+        p[0] = Function(p[2].value, p[3], p[7], p[5])
+
+def p_blk(p):
+    '''
+    BLK : LBRACE RBRACE
+    BLK : LBRACE STMTS RBRACE
+    '''
+    if len(p) == 3:
+        p[0] = Blk()
+    else:
+        #print(p[2])
+        p[0] = Blk(p[2])
+
+def p_stmts(p):
+    '''
+    STMTS : STMT
+    STMTS : STMT STMTS
+    '''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[2].append(p[1])
+        p[0] = p[2]
+
+def p_stmt_blk(p):
+    'STMT : BLK'
+    p[0] = BlkStatement(p[1])
+
+def p_stmt_ret(p):
+    '''
+    STMT : RETURN SEMICOLON 
+         | RETURN EXP SEMICOLON
+    '''
+    if len(p) == 3:
+        p[0] = ReturnStatement()
+    else:
+        p[0] = ReturnStatement(p[2])
+
+def p_stmt_vdecl(p):
+    '''
+    STMT : VDECL EQUAL EXP SEMICOLON
+    '''
+    # need to modify vdecl and exp
+    p[0] = VDeclStatement(p[1], p[3])
+
+def p_stmt_expSemi(p):
+    '''
+    STMT : EXP SEMICOLON
+    '''
+    p[0] = ExpSemiStatement(p[1])
+
+def p_stmt_while(p):
+    '''
+    STMT : WHILE LPAREN EXP RPAREN STMT
+    '''
+    p[0] = WhileStatement(p[3], p[5])
+
+def p_stmt_if(p):
+    '''
+    STMT : IF LPAREN EXP RPAREN STMT
+         | IF LPAREN EXP RPAREN STMT ELSE STMT
+    '''
+    if len(p) == 6:
+        p[0] = IfStatement(p[3], p[5])
+    else:
+        p[0] = IfStatement(p[3], p[5], p[7])
+
+def p_stmt_print_exp(p):
+    '''
+    STMT : PRINT EXP SEMICOLON
+    '''
+    p[0] = PrintExpStatement(p[2])
+
+def p_stmt_print_slit(p):
+    '''
+    STMT : PRINT SLIT SEMICOLON
+    '''
+    p[0] = PrintSLitStatement(p[2])
+
 def p_exps(p):
     '''EXPS : EXP
             | EXP COMMA EXPS'''
@@ -387,12 +725,52 @@ precedence = (
 )
 
 data = '''
-$x = [int] ($a + $b - $c / $a * $b),($xyz > -$xy && $a < $b || ($c == $a || $x == 0))
+extern int getarg(int);
+extern float getargf(int);
+
+def int fib (int $n) {
+    if ($n < 2)
+        if ($n == 0)
+            return 0;
+        else
+            return 1;
+    
+    int $a = fib ($n - 1);
+    int $b = fib ($n - 2);
+    return $a + $b;
+}
+
+def void inc (ref int $n) {
+  $n = $n + 1;
+}
+
+def void things (ref int $n) {
+  while (!($n > 100)) {
+    $n = $n * $n - 2;
+  }
+}
+
+def int run () {
+    print "fib(5):";
+    int $val = fib(5);
+    print $val;
+    
+    print "fib(5)+1:";
+    inc($val);
+    print $val;
+
+    print "something else:";
+    things($val);
+    print $val;
+
+
+    return 0;
+}
 '''
 
 def p_error(p):
     print(f"Syntax error")
 
-yacc.yacc(start = 'EXPS')
+yacc.yacc()
 ast = yacc.parse(data, debug = False)
-print(ast.yaml_format())
+print(ast)
