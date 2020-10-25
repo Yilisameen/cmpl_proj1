@@ -10,14 +10,224 @@ class Exps:
     def addExp(self, exp):
         self.exps.append(exp)
 
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: exps')
-        print(prefix + 'exps:')
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'name: exps\n'
+        res = prefix + 'exps:\n'
         prefix = prefix + ' '
         for i in range(len(self.exps)-1, -1, -1):
-            print(prefix + '-')
-            self.exps[i].yaml(prefix + ' ')
+            res = res + prefix + '-\n'
+            res = res + self.exps[i].yaml_format(prefix + ' ')
+        return res
 
+class Exp:
+    def __init__(self, exp):
+        self.type = 'exp'
+        #self.style = 'exp'
+        self.exp = exp
+
+    def yaml_format(self, prefix = ''):
+        res = ''
+        if self.exp.type == 'varid':
+            res = prefix + 'name: varval\n'
+        res= res + self.exp.yaml_format(prefix)
+        return res
+
+class Binop:
+    def __init__(self, value):
+        self.type = 'binop'
+        self.value = value
+    
+    def yaml_format(self, prefix = ''):
+        if self.value.type == 'typeCast':
+            res = prefix + 'name: caststmt\n'
+        elif self.value.type == 'assign':
+            res = prefix + 'name: assign\n'
+        elif self.value.type == 'expGlobID':
+            res = prefix + 'name: funccall\n'
+        else:
+            res = prefix + 'name: binop\n'
+        res = res + self.value.yaml_format(prefix)
+        return res
+
+class ExpParen:
+    def __init__(self, exp):
+        self.type = 'expParen'
+        #self.style = 'expParen'
+        self.exp = exp
+    
+    def yaml_format(self, prefix = ''):
+        return self.exp.yaml_format(prefix)
+
+class ExpGlobID:
+    def __init__(self, globid, params):
+        self.type = 'expGlobID'
+        #self.style = 'expGlobID'
+        self.globid = globid
+        self.params = params
+    
+    def yaml_format(self, prefix = ''):
+        #res = prefix + 'name: funccall\n'
+        res = prefix + 'globid: ' + self.globid + '\n'
+        if self.params is not None:
+            res = res + prefix + 'params: \n'
+            res = res + self.params.yaml_format(prefix + ' ')
+        return res
+
+
+class Assign:
+    def __init__(self, var, exp):
+        self.type = 'assign'
+        self.var = var
+        self.exp = exp
+
+    def yaml_format(self, prefix = ''):
+        #print(prefix + 'name: assign')
+        res = self.var.yaml_format(prefix)
+        res = res + prefix + 'exp:\n'
+        res = res + self.exp.yaml_format(prefix + ' ')
+        return res
+
+class TypeCast:
+    def __init__(self, typename, exp):
+        self.type = 'typeCast'
+        self.typename = typename
+        self.exp = exp
+
+    def yaml_format(self, prefix = ''):
+        res = self.typename.yaml_format(prefix)
+        res = res + prefix + 'exp:\n'
+        res = res + self.exp.yaml_format(prefix + ' ')
+        return res
+
+class ArithOps:
+    def __init__(self, op, lhs, rhs):
+        self.type = 'arithOps'
+        self.op = op
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'op: ' + self.op + '\n'
+        res = res + prefix + 'lhs: \n'
+        res = res + self.lhs.yaml_format(prefix + ' ')
+        res = res + prefix + 'rhs: '
+        res = res + self.lsh.yaml_format(prefix + ' ')
+        return res
+
+class LogicOps:
+    def __init__(self, op, lhs, rhs):
+        self.type = 'logicOps'
+        self.op = op
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'op: ' + self.op + '\n'
+        res = res + prefix + 'lhs: \n'
+        res = res + self.lhs.yaml_format(prefix + ' ') + '\n'
+        res = res + prefix + 'rhs: \n'
+        res = res + self.rhs.yaml_format(prefix + ' ') + '\n'
+        return res
+
+class Uop:
+    def __init__(self, exp, op):
+        self.type = 'uop'
+        self.exp = exp
+        self.op = op
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'name: uop\n'
+        res = res + prefix + 'op: ' + self.op + '\n'
+        res = res + prefix + 'exp:\n'
+        prefix = prefix + ' '
+        res = res + self.exp.yaml_format(prefix)
+        return res
+
+class Lit:
+    def __init__(self, value):
+        self.type = 'lit'
+        self.value = value
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'name: lit\n'
+        res = res + prefix + 'value: ' + self.value + '\n'
+        return res
+
+class Tdecls:
+    def __init__(self, typename):
+        self.type = 'tdecls'
+        self.types = []
+        self.types.append(typename)
+
+    def addType(self, typename):
+        self.types.append(typename)
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'name: tdecls\n'
+        res = res + prefix + 'types:\n'
+        prefix = prefix + ' '
+        for i in range(0, len(self.types)):
+            res = res + prefix + '- ' + self.types[i].value + '\n'
+        return res
+
+class Vdecls:
+    def __init__(self, vdecl):
+        self.type = 'vdecls'
+        self.vars = []
+        self.vars.append(vdecl)
+    
+    def addVar(self, vdecl):
+        self.vars.append(vdecl)
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'name: vdecls\n'
+        res = res + 'vars:\n'
+        prefix = prefix + ' '
+        for i in range(0, len(self.vars)):
+            res = res + prefix + '-\n'
+            res  = res + self.vars[i].yaml_format(prefix + ' ')
+        return res
+
+class Vdecl:
+    def __init__(self, typename, var):
+        self.type = 'vdecl'
+        self.typename = typename
+        self.var = var
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'node: vdecl\n' 
+        res = res + self.typename.yaml_format(prefix) + self.var.yaml_format(prefix)
+        return res
+
+class Varid:
+    def __init__(self, value):
+        self.type = 'varid'
+        self.value = value
+    
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'var: ' + self.value + '\n'
+        return res
+
+class GlobalID:
+    def __init__(self, value):
+        self.type = 'globid'
+        self.value = value
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'globid: ' + self.value + '\n'
+        return res
+
+class Type:
+    def __init__(self, value):
+        self.type = 'type'
+        self.value = value
+
+    def yaml_format(self, prefix = ''):
+        res = prefix + 'type: ' + self.value + '\n'
+        return res
+
+
+### funcs ###
 def p_exps(p):
     '''EXPS : EXP
             | EXP COMMA EXPS'''
@@ -26,14 +236,6 @@ def p_exps(p):
     elif len(p) == 4:
         p[3].addExp(p[1]) 
         p[0] = p[3]
-
-class Exp:
-    def __init__(self, exp):
-        self.style = 'exp'
-        self.exp = exp
-
-    def yaml(self, prefix = ''):
-        self.exp.yaml(prefix)
 
 def p_exp(p):
     '''EXP : EXPPAREN
@@ -44,78 +246,29 @@ def p_exp(p):
             | EXPGLOBID'''
     p[0] = Exp(p[1])
 
-class ExpParen:
-    def __init__(self, exp):
-        self.style = 'expParen'
-        self.exp = exp
-    
-    def yaml(self, prefix = ''):
-        self.exp.yaml(prefix)
-
 def p_expParen(p):
     '''EXPPAREN : LPAREN EXP RPAREN'''
     p[0] = ExpParen(p[2])
 
-class ExpGlobID:
-    def __init__(self, globid, params):
-        self.style = 'expGlobID'
-        self.globid = globid
-        self.params = params
-    
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: funccall')
-        print(prefix + 'globid: ' + self.globid)
-        print(prefix + 'params: ')
-        self.params.yaml(prefix + ' ')
-
 def p_expGlobid(p):
     '''EXPGLOBID : GLOBID EXPWRAPPER'''
-    p[0] = ExpGlobID(p[1], p[2])
+    p[0] = ExpGlobID(p[1].value, p[2])
 
 def p_expWrapper(p):
     '''EXPWRAPPER : LPAREN RPAREN
                 | LPAREN EXPS RPAREN'''
-    if len(p) == 3:
+    if len(p) == 4:
         p[0] = p[2]
-    else:
-        p[0] = []
-
-class Assign:
-    def __init__(self, var, exp):
-        self.var = var
-        self.exp = exp
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: assign')
-        self.var.yaml(prefix)
-        print(prefix + 'exp:')
-        self.exp.yaml(prefix + ' ')
+    elif len(p) == 3:
+        p[0] = None
 
 def p_assign(p):
     '''ASSIGN : VARID EQUAL EXP'''
     p[0] = Assign(p[1], p[3])
 
-class TypeCast:
-    def __init__(self, typename, exp):
-        self.typename = typename
-        self.exp = exp
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: caststmt')
-        self.typename.yaml(prefix)
-        print(prefix + 'exp:')
-        self.exp.yaml(prefix + ' ')
-
 def p_typeCast(p):
     '''TYPECAST : LBRACKET TYPE RBRACKET EXP'''
     p[0] = TypeCast(p[2], p[4])
-
-class Binop:
-    def __init__(self, value):
-        self.value = value
-    
-    def yaml(self, prefix = ''):
-        self.value.yaml(prefix)
 
 def p_binop(p):
     '''BINOP : ARITHOPS
@@ -123,20 +276,6 @@ def p_binop(p):
             | ASSIGN
             | TYPECAST'''
     p[0] = Binop(p[1])
-
-
-class ArithOps:
-    def __init__(self, op, lhs, rhs):
-        self.op = op
-        self.lhs = lhs
-        self.rhs = rhs
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'op: ' + self.op)
-        print(prefix + 'lhs: ')
-        self.lhs.yaml(prefix + ' ')
-        print(prefix + 'rhs: ')
-        self.lsh.yaml(prefix + ' ')
 
 def p_arithOps(p):
     '''ARITHOPS : EXP TIMES EXP
@@ -151,20 +290,6 @@ def p_arithOps(p):
         p[0] = LogicOps('add', p[1], p[3])
     elif p[2] == '-':
         p[0] = LogicOps('sub', p[1], p[3])
-
-
-class LogicOps:
-    def __init__(self, op, lhs, rhs):
-        self.op = op
-        self.lhs = lhs
-        self.rhs = rhs
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'op: ' + self.op)
-        print(prefix + 'lhs: ')
-        self.lhs.yaml(prefix + ' ')
-        print(prefix + 'rhs: ')
-        self.rhs.yaml(prefix + ' ')
 
 def p_logicOps(p):
     '''LOGICOPS : EXP EQUALITY EXP
@@ -183,60 +308,19 @@ def p_logicOps(p):
     elif p[2] == '||':
         p[0] = LogicOps('or', p[1], p[3])
 
-
-class Uop:
-    def __init__(self, exp, op):
-        self.exp = exp
-        self.op = op
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: uop')
-        print(prefix + 'op: ' + self.op)
-        print(prefix + 'exp: ')
-        prefix = prefix + ' '
-        #self.exp.yaml(prefix)
-        print(prefix + self.exp)
-
 def p_uop(p):
     '''UOP : NOT EXP
             | MINUS EXP'''
     if p[1] == '-':
         p[0] = Uop(p[2], 'minus')
-    else:
+    elif p[1] == '!':
         p[0] = Uop(p[2], 'not')
-    # error handle missing
         
-
-class Lit:
-    def __init__(self, value):
-        self.value = value
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'name: lit')
-        print(prefix + 'value: ' + self.value)
-
 def p_lit(p):
     '''LIT : TRUE
             | FALSE
             | NUMBER'''
     p[0] = Lit(p[1])
-
-class Tdecls:
-    def __init__(self, typename):
-        self.types = []
-        self.types.append(typename)
-
-    def addType(self, typename):
-        self.types.append(typename)
-
-    def yaml(self, prefix = ''):
-        # print(prefix + 'vdecls')
-        # prefix = prefix + ' '
-        print(prefix + 'name: tdecls')
-        print(prefix + 'types:')
-        prefix = prefix + ' '
-        for i in range(len(self.types)-1, -1, -1):
-            print(prefix + '- ' + self.types[i].value)
 
 def p_tdecls(p):
     '''TDECLS : TYPE
@@ -247,27 +331,6 @@ def p_tdecls(p):
         p[3].addType(p[1])
         p[0] = p[3]
 
-class Vdecls:
-    def __init__(self, vdecl):
-        self.vars = []
-        self.vars.append(vdecl)
-    
-    def addVar(self, vdecl):
-        self.vars.append(vdecl)
-
-    def yaml(self, prefix = ''):
-        # print(prefix + 'vdecls')
-        # prefix = prefix + ' '
-        print(prefix + 'name: vdecls')
-        print(prefix + 'vars:')
-        prefix = prefix + ' '
-        for i in range(len(self.vars)-1, -1, -1):
-            current_prefix = prefix
-            print(prefix + '-')
-            current_prefix = current_prefix + ' '
-            self.vars[i].yaml(current_prefix)
-
-
 def p_vdecls(p):
     '''VDECLS : VDECL COMMA VDECLS
             | VDECL'''
@@ -276,56 +339,18 @@ def p_vdecls(p):
         p[3].addVar(p[1])
         p[0] = p[3]
     else:
-        vdecls = Vdecls(p[1])
-        p[0] = vdecls
+        p[0] = Vdecls(p[1])
 
-class Vdecl:
-    def __init__(self, typename, var):
-        self.typename = typename
-        self.var = var
-
-    def yaml(self, prefix = ''):
-        # print(prefix + 'vdecl:')
-        # prefix = prefix + ' '
-        print(prefix + 'node: vdecl')
-        self.typename.yaml(prefix)
-        self.var.yaml(prefix)
 
 def p_vdecl(p):
     '''VDECL : TYPE VARID'''
     p[0] = Vdecl(p[1], p[2])
 
-class Varid:
-    def __init__(self, value):
-        self.value = value
-    
-    def yaml(self, prefix = ''):
-        print(prefix + 'var: ' + self.value)
 
 def p_varid(p):
     '''VARID : DOLLAR ID'''
     value = p[1] + p[2]
     p[0] = Varid(value)
-
-
-class GlobalID:
-    def __init__(self, value):
-        self.value = value
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'globid: ' + self.value)
-
-def p_globid(p):
-    '''GLOBID : ID'''
-    p[0] = GlobalID(p[1])
-
-
-class Type:
-    def __init__(self, value):
-        self.value = value
-
-    def yaml(self, prefix = ''):
-        print(prefix + 'type: ' + self.value)
 
 def p_simpleType(p):
     '''TYPE : INT
@@ -344,6 +369,12 @@ def p_refTypeNoAlias(p):
     value = 'noalias ref ' + p[3].value
     p[0] = Type(value)
 
+def p_globid(p):
+    '''GLOBID : ID'''
+    p[0] = GlobalID(p[1])
+
+
+
 precedence = (
   ('right', 'EQUAL'),
   ('left', 'OR'),
@@ -356,9 +387,12 @@ precedence = (
 )
 
 data = '''
-$x = [int] ($a + $b - $c / $a * $b)
+$x = [int] ($a + $b - $c / $a * $b),($xyz > -$xy && $a < $b || ($c == $a || $x == 0))
 '''
+
+def p_error(p):
+    print(f"Syntax error")
 
 yacc.yacc(start = 'EXPS')
 ast = yacc.parse(data, debug = False)
-ast.yaml()
+print(ast.yaml_format())

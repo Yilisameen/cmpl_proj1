@@ -56,19 +56,19 @@ Rule 35    VDECLS -> VDECL COMMA VDECLS
 Rule 36    VDECLS -> VDECL
 Rule 37    VDECL -> TYPE VARID
 Rule 38    VARID -> DOLLAR ID
-Rule 39    GLOBID -> ID
-Rule 40    TYPE -> INT
-Rule 41    TYPE -> FLOAT
-Rule 42    TYPE -> CINT
-Rule 43    TYPE -> VOID
-Rule 44    TYPE -> REF TYPE
-Rule 45    TYPE -> NOALIAS REF TYPE
+Rule 39    TYPE -> INT
+Rule 40    TYPE -> FLOAT
+Rule 41    TYPE -> CINT
+Rule 42    TYPE -> VOID
+Rule 43    TYPE -> REF TYPE
+Rule 44    TYPE -> NOALIAS REF TYPE
+Rule 45    GLOBID -> ID
 
 Terminals, with rules where they appear
 
 AND                  : 26
 BOOL                 : 
-CINT                 : 42
+CINT                 : 41
 COMMA                : 2 34 35
 DEF                  : 
 DIVIDE               : 20
@@ -78,17 +78,17 @@ EQUAL                : 13
 EQUALITY             : 23
 EXTERN               : 
 FALSE                : 31
-FLOAT                : 41
+FLOAT                : 40
 GREATER              : 25
-ID                   : 38 39
+ID                   : 38 45
 IF                   : 
-INT                  : 40
+INT                  : 39
 LBRACE               : 
 LBRACKET             : 14
 LESS                 : 24
 LPAREN               : 9 11 12
 MINUS                : 22 29
-NOALIAS              : 45
+NOALIAS              : 44
 NOT                  : 28
 NUMBER               : 32
 OR                   : 27
@@ -96,14 +96,14 @@ PLUS                 : 21
 PRINT                : 
 RBRACE               : 
 RBRACKET             : 14
-REF                  : 44 45
+REF                  : 43 44
 RETURN               : 
 RPAREN               : 9 11 12
 SEMICOLON            : 
 SLIT                 : 
 TIMES                : 19
 TRUE                 : 30
-VOID                 : 43
+VOID                 : 42
 WHILE                : 
 error                : 
 
@@ -121,7 +121,7 @@ GLOBID               : 10
 LIT                  : 6
 LOGICOPS             : 16
 TDECLS               : 34
-TYPE                 : 14 33 34 37 44 45
+TYPE                 : 14 33 34 37 43 44
 TYPECAST             : 18
 UOP                  : 5
 VARID                : 7 13 37
@@ -164,7 +164,7 @@ state 0
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -366,7 +366,7 @@ state 9
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -495,7 +495,7 @@ state 14
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -552,7 +552,7 @@ state 15
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -640,9 +640,9 @@ state 19
 
 state 20
 
-    (39) GLOBID -> ID .
+    (45) GLOBID -> ID .
 
-    LPAREN          reduce using rule 39 (GLOBID -> ID .)
+    LPAREN          reduce using rule 45 (GLOBID -> ID .)
 
 
 state 21
@@ -658,12 +658,12 @@ state 21
 state 22
 
     (14) TYPECAST -> LBRACKET . TYPE RBRACKET EXP
-    (40) TYPE -> . INT
-    (41) TYPE -> . FLOAT
-    (42) TYPE -> . CINT
-    (43) TYPE -> . VOID
-    (44) TYPE -> . REF TYPE
-    (45) TYPE -> . NOALIAS REF TYPE
+    (39) TYPE -> . INT
+    (40) TYPE -> . FLOAT
+    (41) TYPE -> . CINT
+    (42) TYPE -> . VOID
+    (43) TYPE -> . REF TYPE
+    (44) TYPE -> . NOALIAS REF TYPE
 
     INT             shift and go to state 41
     FLOAT           shift and go to state 42
@@ -708,7 +708,7 @@ state 23
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -766,7 +766,7 @@ state 24
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -823,7 +823,7 @@ state 25
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -880,7 +880,7 @@ state 26
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -937,7 +937,7 @@ state 27
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -994,7 +994,7 @@ state 28
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1051,7 +1051,7 @@ state 29
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1108,7 +1108,7 @@ state 30
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1165,7 +1165,7 @@ state 31
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1222,7 +1222,7 @@ state 32
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1279,7 +1279,7 @@ state 33
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -1484,7 +1484,7 @@ state 39
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     RPAREN          shift and go to state 59
     LPAREN          shift and go to state 9
@@ -1520,41 +1520,41 @@ state 40
 
 state 41
 
-    (40) TYPE -> INT .
+    (39) TYPE -> INT .
 
-    RBRACKET        reduce using rule 40 (TYPE -> INT .)
+    RBRACKET        reduce using rule 39 (TYPE -> INT .)
 
 
 state 42
 
-    (41) TYPE -> FLOAT .
+    (40) TYPE -> FLOAT .
 
-    RBRACKET        reduce using rule 41 (TYPE -> FLOAT .)
+    RBRACKET        reduce using rule 40 (TYPE -> FLOAT .)
 
 
 state 43
 
-    (42) TYPE -> CINT .
+    (41) TYPE -> CINT .
 
-    RBRACKET        reduce using rule 42 (TYPE -> CINT .)
+    RBRACKET        reduce using rule 41 (TYPE -> CINT .)
 
 
 state 44
 
-    (43) TYPE -> VOID .
+    (42) TYPE -> VOID .
 
-    RBRACKET        reduce using rule 43 (TYPE -> VOID .)
+    RBRACKET        reduce using rule 42 (TYPE -> VOID .)
 
 
 state 45
 
-    (44) TYPE -> REF . TYPE
-    (40) TYPE -> . INT
-    (41) TYPE -> . FLOAT
-    (42) TYPE -> . CINT
-    (43) TYPE -> . VOID
-    (44) TYPE -> . REF TYPE
-    (45) TYPE -> . NOALIAS REF TYPE
+    (43) TYPE -> REF . TYPE
+    (39) TYPE -> . INT
+    (40) TYPE -> . FLOAT
+    (41) TYPE -> . CINT
+    (42) TYPE -> . VOID
+    (43) TYPE -> . REF TYPE
+    (44) TYPE -> . NOALIAS REF TYPE
 
     INT             shift and go to state 41
     FLOAT           shift and go to state 42
@@ -1567,7 +1567,7 @@ state 45
 
 state 46
 
-    (45) TYPE -> NOALIAS . REF TYPE
+    (44) TYPE -> NOALIAS . REF TYPE
 
     REF             shift and go to state 63
 
@@ -2025,7 +2025,7 @@ state 61
     (27) LOGICOPS -> . EXP OR EXP
     (13) ASSIGN -> . VARID EQUAL EXP
     (14) TYPECAST -> . LBRACKET TYPE RBRACKET EXP
-    (39) GLOBID -> . ID
+    (45) GLOBID -> . ID
 
     LPAREN          shift and go to state 9
     NOT             shift and go to state 14
@@ -2052,20 +2052,20 @@ state 61
 
 state 62
 
-    (44) TYPE -> REF TYPE .
+    (43) TYPE -> REF TYPE .
 
-    RBRACKET        reduce using rule 44 (TYPE -> REF TYPE .)
+    RBRACKET        reduce using rule 43 (TYPE -> REF TYPE .)
 
 
 state 63
 
-    (45) TYPE -> NOALIAS REF . TYPE
-    (40) TYPE -> . INT
-    (41) TYPE -> . FLOAT
-    (42) TYPE -> . CINT
-    (43) TYPE -> . VOID
-    (44) TYPE -> . REF TYPE
-    (45) TYPE -> . NOALIAS REF TYPE
+    (44) TYPE -> NOALIAS REF . TYPE
+    (39) TYPE -> . INT
+    (40) TYPE -> . FLOAT
+    (41) TYPE -> . CINT
+    (42) TYPE -> . VOID
+    (43) TYPE -> . REF TYPE
+    (44) TYPE -> . NOALIAS REF TYPE
 
     INT             shift and go to state 41
     FLOAT           shift and go to state 42
@@ -2142,9 +2142,9 @@ state 65
 
 state 66
 
-    (45) TYPE -> NOALIAS REF TYPE .
+    (44) TYPE -> NOALIAS REF TYPE .
 
-    RBRACKET        reduce using rule 45 (TYPE -> NOALIAS REF TYPE .)
+    RBRACKET        reduce using rule 44 (TYPE -> NOALIAS REF TYPE .)
 
 WARNING: 
 WARNING: Conflicts:
