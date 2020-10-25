@@ -17,11 +17,11 @@ class Progress:
     def yaml_format(self):
         res = 'name: prog\n'
         res = res + '  funcs:\n'
-        res = res + self.funcs.yaml_format('    ')
+        res = res + self.funcs.yaml_format('  ')
 
         if self.externs.externs:
             res = res + '  externs:\n'
-            res = res + self.externs.yaml_format('    ')
+            res = res + self.externs.yaml_format('  ')
 
         return res
 
@@ -57,7 +57,7 @@ class Functions:
         res = res + prefix + 'funcs:\n'
         for func in self.functions:
             res = res + prefix + '  '+ '-\n'
-            res = res + func.yaml_format(prefix + '    ')
+            res = res + func.yaml_format(prefix + '  ')
         return res
 
 class External:
@@ -90,7 +90,7 @@ class Externals:
 
         for extern in self.externs:
             res = res + prefix + '  '+ '-\n'
-            res = res + extern.yaml_format(prefix + '    ')
+            res = res + extern.yaml_format(prefix + '  ')
         return res
 
 class Blk:
@@ -113,7 +113,7 @@ class Statements:
         res = res + prefix + 'stmts:\n'
         for stmt in self.stmts:
             res = res + prefix + '  ' + '-\n'
-            res = res + stmt.yaml_format(prefix + '    ')
+            res = res + stmt.yaml_format(prefix + '  ')
         return res
 
 class BlkStatement:
@@ -222,10 +222,10 @@ class Exps:
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: exps\n'
         res = res + prefix + 'exps:\n'
-        prefix = prefix + ' '
+        prefix = prefix + '  '
         for i in range(0, len(self.exps)):
             res = res + prefix + '-\n'
-            res = res + self.exps[i].yaml_format(prefix + ' ')
+            res = res + self.exps[i].yaml_format(prefix + '  ')
         return res
 
 class Exp:
@@ -251,8 +251,8 @@ class Binop:
             res = prefix + 'name: caststmt\n'
         elif self.value.type == 'assign':
             res = prefix + 'name: assign\n'
-        elif self.value.type == 'expGlobID':
-            res = prefix + 'name: funccall\n'
+        # elif self.value.type == 'expGlobID':
+        #     res = prefix + 'name: funccall\n'
         else:
             res = prefix + 'name: binop\n'
         res = res + self.value.yaml_format(prefix)
@@ -275,11 +275,11 @@ class ExpGlobID:
         self.params = params
     
     def yaml_format(self, prefix = ''):
-        #res = prefix + 'name: funccall\n'
-        res = prefix + 'globid: ' + self.globid + '\n'
+        res = prefix + 'name: funccall\n'
+        res = res + prefix + 'globid: ' + self.globid + '\n'
         if self.params is not None:
             res = res + prefix + 'params: \n'
-            res = res + self.params.yaml_format(prefix + ' ')
+            res = res + self.params.yaml_format(prefix + '  ')
         return res
 
 class Assign:
@@ -292,7 +292,7 @@ class Assign:
         #print(prefix + 'name: assign')
         res = self.var.yaml_format(prefix)
         res = res + prefix + 'exp:\n'
-        res = res + self.exp.yaml_format(prefix + ' ')
+        res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
 class TypeCast:
@@ -304,7 +304,7 @@ class TypeCast:
     def yaml_format(self, prefix = ''):
         res = self.typename.yaml_format(prefix)
         res = res + prefix + 'exp:\n'
-        res = res + self.exp.yaml_format(prefix + ' ')
+        res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
 class ArithOps:
@@ -317,9 +317,9 @@ class ArithOps:
     def yaml_format(self, prefix = ''):
         res = prefix + 'op: ' + self.op + '\n'
         res = res + prefix + 'lhs: \n'
-        res = res + self.lhs.yaml_format(prefix + ' ')
+        res = res + self.lhs.yaml_format(prefix + '  ')
         res = res + prefix + 'rhs: '
-        res = res + self.lsh.yaml_format(prefix + ' ')
+        res = res + self.lsh.yaml_format(prefix + '  ')
         return res
 
 class LogicOps:
@@ -332,9 +332,9 @@ class LogicOps:
     def yaml_format(self, prefix = ''):
         res = prefix + 'op: ' + self.op + '\n'
         res = res + prefix + 'lhs: \n'
-        res = res + self.lhs.yaml_format(prefix + ' ') + '\n'
+        res = res + self.lhs.yaml_format(prefix + '  ')
         res = res + prefix + 'rhs: \n'
-        res = res + self.rhs.yaml_format(prefix + ' ') + '\n'
+        res = res + self.rhs.yaml_format(prefix + '  ')
         return res
 
 class Uop:
@@ -347,7 +347,7 @@ class Uop:
         res = prefix + 'name: uop\n'
         res = res + prefix + 'op: ' + self.op + '\n'
         res = res + prefix + 'exp:\n'
-        prefix = prefix + ' '
+        prefix = prefix + '  '
         res = res + self.exp.yaml_format(prefix)
         return res
 
@@ -373,7 +373,7 @@ class Tdecls:
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: tdecls\n'
         res = res + prefix + 'types:\n'
-        prefix = prefix + ' '
+        prefix = prefix + '  '
         for i in range(0, len(self.types)):
             res = res + prefix + '- ' + self.types[i].value + '\n'
         return res
@@ -390,10 +390,10 @@ class Vdecls:
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: vdecls\n'
         res = res + prefix + 'vars:\n'
-        prefix = prefix + ' '
+        prefix = prefix + '  '
         for i in range(0, len(self.vars)):
             res = res + prefix + '-\n'
-            res  = res + self.vars[i].yaml_format(prefix + ' ')
+            res  = res + self.vars[i].yaml_format(prefix + '  ')
         return res
 
 class Vdecl:
