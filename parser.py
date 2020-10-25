@@ -223,7 +223,7 @@ class Exps:
         res = prefix + 'name: exps\n'
         res = res + prefix + 'exps:\n'
         prefix = prefix + ' '
-        for i in range(len(self.exps)-1, -1, -1):
+        for i in range(0, len(self.exps)):
             res = res + prefix + '-\n'
             res = res + self.exps[i].yaml_format(prefix + ' ')
         return res
@@ -449,25 +449,25 @@ def p_prog(p):
 def p_externs(p):
     '''
     EXTERNS : EXTERNSTS 
-            | EXTERNSTS EXTERNS
+            | EXTERNS EXTERNSTS
     '''
     if len(p) == 2:
         p[0] = [p[1]]
     else:
-        p[2].append(p[1])
-        p[0] = p[2]
+        p[1].append(p[2])
+        p[0] = p[1]
 
 
 def p_funcs(p):
     '''
     FUNCS : FUNC
-        | FUNC FUNCS
+        | FUNCS FUNC
     '''
     if len(p) == 2:
         p[0] = [p[1]]
     else:
-        p[2].append(p[1])
-        p[0] = p[2]
+        p[1].append(p[2])
+        p[0] = p[1]
 
 def p_extern(p):
     '''
@@ -503,13 +503,13 @@ def p_blk(p):
 def p_stmts(p):
     '''
     STMTS : STMT
-    STMTS : STMT STMTS
+    STMTS : STMTS STMT
     '''
     if len(p) == 2:
         p[0] = [p[1]]
     else:
-        p[2].append(p[1])
-        p[0] = p[2]
+        p[1].append(p[2])
+        p[0] = p[1]
 
 def p_stmt_blk(p):
     'STMT : BLK'
@@ -568,12 +568,12 @@ def p_stmt_print_slit(p):
 
 def p_exps(p):
     '''EXPS : EXP
-            | EXP COMMA EXPS'''
+            | EXPS COMMA EXP'''
     if len(p) == 2:
         p[0] = Exps(p[1])
     elif len(p) == 4:
-        p[3].addExp(p[1]) 
-        p[0] = p[3]
+        p[1].addExp(p[3]) 
+        p[0] = p[1]
 
 def p_exp(p):
     '''EXP : EXPPAREN
@@ -662,20 +662,20 @@ def p_lit(p):
 
 def p_tdecls(p):
     '''TDECLS : TYPE
-                | TYPE COMMA TDECLS'''
+                | TDECLS COMMA TYPE'''
     if len(p) == 2:
         p[0] = Tdecls(p[1])
     else :
-        p[3].addType(p[1])
-        p[0] = p[3]
+        p[1].addType(p[3])
+        p[0] = p[1]
 
 def p_vdecls(p):
-    '''VDECLS : VDECL COMMA VDECLS
+    '''VDECLS : VDECLS COMMA VDECL
             | VDECL'''
     
     if len(p) == 4:
-        p[3].addVar(p[1])
-        p[0] = p[3]
+        p[1].addVar(p[3])
+        p[0] = p[1]
     else:
         p[0] = Vdecls(p[1])
 
@@ -714,13 +714,14 @@ def p_globid(p):
 
 
 precedence = (
-  ('right', 'EQUAL'),
-  ('left', 'OR'),
-  ('left', 'AND'),
-  ('left', 'EQUALITY'),
-  ('left', 'LESS', 'GREATER'),
-  ('left', 'PLUS', 'MINUS'),
-  ('left', 'TIMES','DIVIDE'),
+    ('right', 'COMMA'),
+    ('right', 'EQUAL'),
+    ('left', 'OR'),
+    ('left', 'AND'),
+    ('left', 'EQUALITY'),
+    ('left', 'LESS', 'GREATER'),
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'TIMES','DIVIDE'),
 )
 
 data = '''
