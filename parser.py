@@ -221,7 +221,7 @@ class Exps:
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: exps\n'
-        res = prefix + 'exps:\n'
+        res = res + prefix + 'exps:\n'
         prefix = prefix + ' '
         for i in range(len(self.exps)-1, -1, -1):
             res = res + prefix + '-\n'
@@ -721,7 +721,6 @@ precedence = (
   ('left', 'LESS', 'GREATER'),
   ('left', 'PLUS', 'MINUS'),
   ('left', 'TIMES','DIVIDE'),
-  #('left','UOP')
 )
 
 data = '''
