@@ -16,12 +16,12 @@ class Progress:
 
     def yaml_format(self):
         res = 'name: prog\n'
-        res = res + '  funcs:\n'
-        res = res + self.funcs.yaml_format('    ')
+        res = res + 'funcs:\n'
+        res = res + self.funcs.yaml_format('  ')
 
         if self.externs.externs:
-            res = res + '  externs:\n'
-            res = res + self.externs.yaml_format('    ')
+            res = res + 'externs:\n'
+            res = res + self.externs.yaml_format('  ')
 
         return res
 
@@ -121,9 +121,7 @@ class BlkStatement:
         self.blk = blk 
 
     def yaml_format(self, prefix):
-        res = prefix + 'name: blk\n'
-        res = res + prefix + 'blk:\n'
-        res = res + self.blk.yaml_format(prefix + '  ')
+        res = self.blk.yaml_format(prefix)
         return res
 
 class ReturnStatement:

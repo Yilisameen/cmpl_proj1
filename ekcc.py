@@ -64,7 +64,9 @@ except IOError:
 
 ast = yacc.parse(data, debug = False).yaml_format()
 with open(output_file_name, 'w') as file:
+    file.write('---\n')
     file.write(ast)
+    file.write('...\n')
 
 sys.exit(0)
 
