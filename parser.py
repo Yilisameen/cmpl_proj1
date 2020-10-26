@@ -17,11 +17,11 @@ class Progress:
     def yaml_format(self):
         res = 'name: prog\n'
         res = res + '  funcs:\n'
-        res = res + self.funcs.yaml_format('  ')
+        res = res + self.funcs.yaml_format('    ')
 
         if self.externs.externs:
             res = res + '  externs:\n'
-            res = res + self.externs.yaml_format('  ')
+            res = res + self.externs.yaml_format('    ')
 
         return res
 
@@ -57,7 +57,7 @@ class Functions:
         res = res + prefix + 'funcs:\n'
         for func in self.functions:
             res = res + prefix + '  '+ '-\n'
-            res = res + func.yaml_format(prefix + '  ')
+            res = res + func.yaml_format(prefix + '    ')
         return res
 
 class External:
@@ -90,7 +90,7 @@ class Externals:
 
         for extern in self.externs:
             res = res + prefix + '  '+ '-\n'
-            res = res + extern.yaml_format(prefix + '  ')
+            res = res + extern.yaml_format(prefix + '    ')
         return res
 
 class Blk:
@@ -113,7 +113,7 @@ class Statements:
         res = res + prefix + 'stmts:\n'
         for stmt in self.stmts:
             res = res + prefix + '  ' + '-\n'
-            res = res + stmt.yaml_format(prefix + '  ')
+            res = res + stmt.yaml_format(prefix + '    ')
         return res
 
 class BlkStatement:
