@@ -246,7 +246,7 @@ class Exp:
         res = ''
         if self.exp.type == 'varid':
             res = prefix + 'name: varval\n'
-        if self.exp.type == 'expGlobID' and self.exp.globid not in functions:
+        if self.exp.type == 'expGlobID' and self.exp.globid not in functions and self.exp.globid not in externals:
             try:
                 raise Exception()
             except:
