@@ -451,9 +451,9 @@ class Type:
         res = prefix + 'type: ' + self.value + '\n'
         return res
 
-
 externals = []
 functions = []
+has_run_function = []
 
 ### funcs ###
 def p_prog(p):
@@ -461,6 +461,13 @@ def p_prog(p):
     PROG : FUNCS
         | EXTERNS FUNCS
     """
+    if not has_run_function:
+            try:
+                raise Exception()
+            except:
+                print('error: there is no function named "run" in the program.')
+                sys.exit(3)
+
     if len(p) == 2:
         p[0] = Progress(p[1])
     else:
@@ -505,6 +512,27 @@ def p_func(p):
     FUNC : DEF TYPE ID LPAREN RPAREN BLK
     FUNC : DEF TYPE ID LPAREN VDECLS RPAREN BLK
     '''
+    if p[3] == 'run':
+            if has_run_function:
+                try:
+                    raise Exception()
+                except:
+                    print('error: there cannot be over 1 functions named "run".')
+                    sys.exit(3)
+            if p[2].value != 'int':
+                try:
+                    raise Exception()
+                except:
+                    print('error: "run" function\'s return type must be "int".')
+                    sys.exit(3)
+            if len(p) != 7:
+                try:
+                    raise Exception()
+                except:
+                    print('error: "run" function should take no argument.')
+                    sys.exit(3)
+            has_run_function.append(1)
+
     if len(p) == 7:
         p[0] = Function(p[2].value, p[3], p[6])
     else:

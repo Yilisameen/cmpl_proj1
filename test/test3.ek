@@ -15,8 +15,5 @@ def void inc (ref int $n) {
 }
 
 def int run () {
-    int $val = fib(5);
-    print $val;
-
-    return 0;
+	fib(5);
 }
