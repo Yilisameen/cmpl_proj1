@@ -140,10 +140,18 @@ class ReturnStatement:
 
 class VDeclStatement:
     def __init__(self, vdecl, exp):
+        if vdecl.is_ref and exp.exp.type != 'varid':
+            try:
+                raise Exception()
+            except:
+                print('error: ref var initializer must be a variable.')
+                sys.exit(10)
+        
         self.vdecl = vdecl
-        self.exp = exp 
+        self.exp = exp
+            
 
-    def yaml_format(self, prefix):
+    def yaml_format(self, prefix = ''):
         res = prefix + 'name: vardeclstmt\n'
         res = res + prefix + 'vdecl:\n'
         res = res + self.vdecl.yaml_format(prefix + '  ')
@@ -231,6 +239,7 @@ class Exp:
     def __init__(self, exp):
         self.type = 'exp'
         #self.style = 'exp'
+        #self.catelog = catelog
         self.exp = exp
 
     def yaml_format(self, prefix = ''):
@@ -402,7 +411,7 @@ class Vdecls:
         return res
 
 class Vdecl:
-    def __init__(self, typename, var):
+    def __init__(self, typename, var, is_ref = False):
         self.type = 'vdecl'
         if typename.value == 'void':
             try:
@@ -412,6 +421,7 @@ class Vdecl:
                 sys.exit(6)
         self.typename = typename
         self.var = var
+        self.is_ref = is_ref
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'node: vdecl\n' 
@@ -437,14 +447,17 @@ class GlobalID:
         return res
 
 class Type:
-    def __init__(self, value):
+    def __init__(self, value, is_noalias = False, is_ref = False):
         self.type = 'type'
-        if 'ref void' in value or 'ref ref' in value:
-            try:
-                raise Exception()
-            except:
-                print('error: a ref type may not contain a \'ref\' or \'void\' type.')
-                sys.exit(7)
+        self.is_noalias = is_noalias
+        self.is_ref = is_ref
+
+        # if 'ref void' in value or 'ref ref' in value:
+        #     try:
+        #         raise Exception()
+        #     except:
+        #         print('error: a ref type may not contain a \'ref\' or \'void\' type.')
+        #         sys.exit(7)
         self.value = value
 
     def yaml_format(self, prefix = ''):
@@ -532,6 +545,13 @@ def p_func(p):
                     print('error: "run" function should take no argument.')
                     sys.exit(11)
             has_run_function.append(1)
+    
+    if p[2].is_ref:
+        try:
+            raise Exception()
+        except:
+            print('error: a function may not return a ref type.')
+            sys.exit(9)
 
     if len(p) == 7:
         p[0] = Function(p[2].value, p[3], p[6])
@@ -732,7 +752,7 @@ def p_vdecls(p):
 
 def p_vdecl(p):
     '''VDECL : TYPE VARID'''
-    p[0] = Vdecl(p[1], p[2])
+    p[0] = Vdecl(p[1], p[2], p[1].is_ref)
 
 
 def p_varid(p):
@@ -749,13 +769,37 @@ def p_simpleType(p):
 
 def p_refType(p):
     '''TYPE : REF TYPE'''
+    if p[2].is_ref:
+        try:
+            raise Exception()
+        except:
+            print('error: a ref type may not contain a \'ref\' type.')
+            sys.exit(7)
+    if p[2].value == 'void':
+        try:
+            raise Exception()
+        except:
+            print('error: a ref type may not contain a \'void\' type.')
+            sys.exit(7)
     value = 'ref ' + p[2].value
-    p[0] = Type(value)
+    p[0] = Type(value, False, True)
 
 def p_refTypeNoAlias(p):
     '''TYPE : NOALIAS REF TYPE'''
+    if p[3].is_ref:
+        try:
+            raise Exception()
+        except:
+            print('error: a ref type may not contain a \'ref\' type.')
+            sys.exit(7)
+    if p[3].value == 'void':
+        try:
+            raise Exception()
+        except:
+            print('error: a ref type may not contain a \'void\' type.')
+            sys.exit(7)
     value = 'noalias ref ' + p[3].value
-    p[0] = Type(value)
+    p[0] = Type(value, True, True)
 
 def p_globid(p):
     '''GLOBID : ID'''

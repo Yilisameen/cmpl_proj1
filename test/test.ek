@@ -1,1 +1,1 @@
-ref int $test1
+ref int $x = $y;
