@@ -242,7 +242,7 @@ class Exp:
                 raise Exception()
             except:
                 print('error: all functions must be declared before use.')
-                sys.exit(3)
+                sys.exit(8)
         res = res + self.exp.yaml_format(prefix)
         return res
 
@@ -409,7 +409,7 @@ class Vdecl:
                 raise Exception()
             except:
                 print('error: <vdecl> may not have void type.')
-                sys.exit(3)
+                sys.exit(6)
         self.typename = typename
         self.var = var
 
@@ -444,7 +444,7 @@ class Type:
                 raise Exception()
             except:
                 print('error: a ref type may not contain a \'ref\' or \'void\' type.')
-                sys.exit(3)
+                sys.exit(7)
         self.value = value
 
     def yaml_format(self, prefix = ''):
@@ -466,7 +466,7 @@ def p_prog(p):
                 raise Exception()
             except:
                 print('error: there is no function named "run" in the program.')
-                sys.exit(3)
+                sys.exit(11)
 
     if len(p) == 2:
         p[0] = Progress(p[1])
@@ -518,19 +518,19 @@ def p_func(p):
                     raise Exception()
                 except:
                     print('error: there cannot be over 1 functions named "run".')
-                    sys.exit(3)
+                    sys.exit(11)
             if p[2].value != 'int':
                 try:
                     raise Exception()
                 except:
                     print('error: "run" function\'s return type must be "int".')
-                    sys.exit(3)
+                    sys.exit(11)
             if len(p) != 7:
                 try:
                     raise Exception()
                 except:
                     print('error: "run" function should take no argument.')
-                    sys.exit(3)
+                    sys.exit(11)
             has_run_function.append(1)
 
     if len(p) == 7:
