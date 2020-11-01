@@ -439,7 +439,7 @@ class GlobalID:
 class Type:
     def __init__(self, value):
         self.type = 'type'
-        if 'ref void' in value or 'ref ref':
+        if 'ref void' in value or 'ref ref' in value:
             try:
                 raise Exception()
             except:
@@ -749,4 +749,4 @@ precedence = (
     ('left', 'TIMES','DIVIDE'),
 )
 
-yacc.yacc(start='VDECL')
+yacc.yacc()
