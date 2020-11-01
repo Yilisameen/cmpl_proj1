@@ -1,4 +1,5 @@
 import ply.yacc as yacc
+import sys, traceback
 
 from lexer import tokens
 
@@ -397,6 +398,12 @@ class Vdecls:
 class Vdecl:
     def __init__(self, typename, var):
         self.type = 'vdecl'
+        if typename.value == 'void':
+            try:
+                raise Exception()
+            except:
+                print('error: <vdecl> may not have void type.')
+                sys.exit(3)
         self.typename = typename
         self.var = var
 
@@ -426,6 +433,12 @@ class GlobalID:
 class Type:
     def __init__(self, value):
         self.type = 'type'
+        if 'ref void' in value or 'ref ref':
+            try:
+                raise Exception()
+            except:
+                print('error: a ref type may not contain a \'ref\' or \'void\' type.')
+                sys.exit(3)
         self.value = value
 
     def yaml_format(self, prefix = ''):
@@ -725,4 +738,4 @@ precedence = (
     ('left', 'TIMES','DIVIDE'),
 )
 
-yacc.yacc()
+yacc.yacc(start='VDECL')

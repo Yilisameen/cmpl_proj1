@@ -1,0 +1,5 @@
+---
+node: vdecl
+type: ref int
+var: $test1
+...
