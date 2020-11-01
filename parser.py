@@ -237,7 +237,13 @@ class Exp:
         res = ''
         if self.exp.type == 'varid':
             res = prefix + 'name: varval\n'
-        res= res + self.exp.yaml_format(prefix)
+        if self.exp.type == 'expGlobID' and self.exp.globid not in functions:
+            try:
+                raise Exception()
+            except:
+                print('error: all functions must be declared before use.')
+                sys.exit(3)
+        res = res + self.exp.yaml_format(prefix)
         return res
 
 class Binop:
@@ -446,6 +452,9 @@ class Type:
         return res
 
 
+externals = []
+functions = []
+
 ### funcs ###
 def p_prog(p):
     """
@@ -489,6 +498,7 @@ def p_extern(p):
         p[0] = External(p[2].value, p[3])
     else:
         p[0] = External(p[2].value, p[3], p[5])
+    externals.append(p[3])
 
 def p_func(p):
     '''
@@ -499,6 +509,7 @@ def p_func(p):
         p[0] = Function(p[2].value, p[3], p[6])
     else:
         p[0] = Function(p[2].value, p[3], p[7], p[5])
+    functions.append(p[3])
 
 def p_blk(p):
     '''
