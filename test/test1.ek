@@ -23,6 +23,8 @@ def void things (ref int $n) {
   }
 }
 
+def int test2(){}
+
 
 def int run () {
     print "fib(5):";
@@ -31,6 +33,8 @@ def int run () {
     int $test1 = 1;
     float $test2 = 2.2;
     $test1 = [int] $test2;
+
+    int $test3 = test2();
 
 
     print $val;

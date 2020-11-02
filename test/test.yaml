@@ -216,6 +216,12 @@ funcs:
     -
       name: func
       ret_type: int
+      globid: test2
+      blk:
+        name: blk
+    -
+      name: func
+      ret_type: int
       globid: run
       blk:
         name: blk
@@ -275,6 +281,16 @@ funcs:
                   exp:
                     name: varval
                     var: $test2
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $test3
+              exp:
+                binop_type: int
+                name: funccall
+                globid: test2
             -
               name: print
               exp:

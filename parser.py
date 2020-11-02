@@ -331,7 +331,7 @@ class ExpGlobID:
             try:
                 raise Exception()
             except:
-                print('errors: func not defined is called')
+                print('errors: all functions must be declared before use')
                 sys.exit(-1)
         return globId_type
     
