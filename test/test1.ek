@@ -1,7 +1,7 @@
 extern int getarg(int);
 extern float getargf(int);
 
-def float fib (int $n) {
+def int fib (int $n) {
     if ($n < 2)
         if ($n == 0)
             return 0;
@@ -27,9 +27,11 @@ def void things (ref int $n) {
 def int run () {
     print "fib(5):";
     int $val = fib(5);
-    float $test1 = 2.2;
-    int $test2 = 1;
-    $test1 = [int] $test1;
+
+    int $test1 = 1;
+    float $test2 = 2.2;
+    $test1 = [int] $test2;
+
 
     print $val;
     

@@ -149,9 +149,26 @@ class VDeclStatement:
         
         self.vdecl = vdecl
         self.exp = exp
+
+    def node_type_check(self):
+        left_type = ref_type_map.get(self.vdecl.typename.value, self.vdecl.typename.value)
+        right_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
+        if left_type != right_type:
+            try:
+                raise Exception()
+            except:
+                print('error: Relevant AST 10 nodes don\'t have the correct type.')
+                sys.exit(12)
+        return True
             
 
     def yaml_format(self, prefix = ''):
+        if not self.node_type_check():
+            try:
+                raise Exception()
+            except:
+                print('error: Relevant AST 11 nodes don\'t have the correct type.')
+                sys.exit(12)
         res = prefix + 'name: vardeclstmt\n'
         res = res + prefix + 'vdecl:\n'
         res = res + self.vdecl.yaml_format(prefix + '  ')

@@ -5,7 +5,7 @@ funcs:
   funcs:
     -
       name: func
-      ret_type: float
+      ret_type: int
       globid: fib
       blk:
         name: blk
@@ -232,8 +232,19 @@ funcs:
                 type: float
                 var: $test2
               exp:
-                name: varval
+                name: lit
+                value: 2.2
+            -
+              name: expstmt
+              exp:
+                name: assign
                 var: $test1
+                exp:
+                  name: caststmt
+                  type: int
+                  exp:
+                    name: varval
+                    var: $test2
             -
               name: print
               exp:
