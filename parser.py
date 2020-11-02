@@ -151,6 +151,7 @@ class VDeclStatement:
         self.exp = exp
 
     def node_type_check(self):
+        global ref_type_map
         left_type = ref_type_map.get(self.vdecl.typename.value, self.vdecl.typename.value)
         right_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
         if left_type != right_type:
@@ -261,7 +262,7 @@ class Exp:
         return self.exp.get_type()
 
     def yaml_format(self, prefix = ''):
-        res = ''
+        res = prefix + 'binop_type: ' + self.exp.get_type() + '\n'
         if self.exp.type == 'varid':
             res = prefix + 'name: varval\n'
         if self.exp.type == 'expGlobID' and self.exp.globid not in functions and self.exp.globid not in externals:
@@ -307,7 +308,6 @@ class Binop:
 class ExpParen:
     def __init__(self, exp):
         self.type = 'expParen'
-        #self.style = 'expParen'
         self.exp = exp
 
     def get_type(self):
@@ -321,14 +321,11 @@ globid_type = {}
 class ExpGlobID:
     def __init__(self, globid, params):
         self.type = 'expGlobID'
-        #self.style = 'expGlobID'
         self.globid = globid
         self.params = params
 
     def get_type(self):
-        #print(self.yaml_format())
         global globid_type
-        #print(globid_type)
         globId_type = globid_type.get(self.globid, None)
         if globId_type == None:
             try:
@@ -359,28 +356,23 @@ class Assign:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 1 nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
 
     def node_type_check(self):
-        print(self.yaml_format())
         global varid_type
-        var_type = ref_type_map.get(self.var.get_type(), None)
+        var_type = ref_type_map.get(self.var.get_type(), self.var.get_type())
         exp_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
-        print(var_type)
-        print(exp_type)
-        print(varid_type)
         if var_type != exp_type:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 2 nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
         else:
             return True
 
     def yaml_format(self, prefix = ''):
-        #print(prefix + 'name: assign')
         res = self.var.yaml_format(prefix)
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
@@ -401,7 +393,7 @@ class TypeCast:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 3 nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
     
     def node_type_check(self):
@@ -415,7 +407,7 @@ class TypeCast:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 4 nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
 
     def yaml_format(self, prefix = ''):
@@ -447,7 +439,7 @@ class ArithOps:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 5nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
 
     def node_type_check(self):
@@ -460,7 +452,7 @@ class ArithOps:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 6nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
             
 
@@ -486,18 +478,27 @@ class LogicOps:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 7nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
 
     def node_type_check(self):
-        #print(self.yaml_format())
+        if self.lhs.get_type() == 'bool' and self.rhs.get_type() == 'bool':
+            if self.op == 'and' or self.op == 'or' or self.op == 'eq':
+                return True
+            else:
+                try:
+                    raise Exception()
+                except:
+                    print(self.op)
+                    print('errors: Relevant AST 6nodes don\'t have the correct type')
+                    sys.exit(12)
         left_type = ref_type_map.get(self.lhs.get_type(), None)
         right_type = ref_type_map.get(self.rhs.get_type(), None)
         if left_type != right_type and left_type != None and right_type != None:
             try:
                 raise Exception()
             except:
-                print('errors: Relevant AST 8nodes don\'t have the correct type')
+                print('errors: Relevant AST nodes don\'t have the correct type')
                 sys.exit(12)
         else:
             return True
@@ -517,7 +518,6 @@ class Uop:
         self.op = op
 
     def get_type(self):
-        #print(self.yaml_format())
         if self.op == 'not' and self.exp.get_type() != 'bool':
             try:
                 raise Exception()
@@ -642,13 +642,6 @@ class Type:
         self.type = 'type'
         self.is_noalias = is_noalias
         self.is_ref = is_ref
-
-        # if 'ref void' in value or 'ref ref' in value:
-        #     try:
-        #         raise Exception()
-        #     except:
-        #         print('error: a ref type may not contain a \'ref\' or \'void\' type.')
-        #         sys.exit(7)
         self.value = value
 
     def yaml_format(self, prefix = ''):
@@ -793,7 +786,6 @@ def p_stmt_vdecl(p):
     '''
     STMT : VDECL EQUAL EXP SEMICOLON
     '''
-    # need to modify vdecl and exp
     p[0] = VDeclStatement(p[1], p[3])
 
 def p_stmt_expSemi(p):
