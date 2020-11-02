@@ -262,9 +262,11 @@ class Exp:
         return self.exp.get_type()
 
     def yaml_format(self, prefix = ''):
-        res = prefix + 'binop_type: ' + self.exp.get_type() + '\n'
+        res = ''
+        if self.exp.type != 'expParen':
+            res = prefix + 'binop_type: ' + self.exp.get_type() + '\n'
         if self.exp.type == 'varid':
-            res = prefix + 'name: varval\n'
+            res = res + prefix + 'name: varval\n'
         if self.exp.type == 'expGlobID' and self.exp.globid not in functions and self.exp.globid not in externals:
             try:
                 raise Exception()
@@ -419,10 +421,13 @@ class TypeCast:
 ref_type_map = {
     'int': 'int',
     'ref int': 'int',
+    'noalias ref int' : 'int',
     'cint': 'cint',
     'ref cint' : 'cint',
+    'noalias ref cint' : 'cint',
     'float' : 'float',
-    'nref float' : 'float',
+    'ref float' : 'float',
+    'noalias ref float' : 'float'
 }
 
 class ArithOps:

@@ -19,6 +19,7 @@ funcs:
                 name: binop
                 op: lt
                 lhs: 
+                  binop_type: ref int
                   name: varval
                   var: $n
                 rhs: 
@@ -32,6 +33,7 @@ funcs:
                   name: binop
                   op: eq
                   lhs: 
+                    binop_type: ref int
                     name: varval
                     var: $n
                   rhs: 
@@ -68,6 +70,7 @@ funcs:
                       name: binop
                       op: sub
                       lhs: 
+                        binop_type: ref int
                         name: varval
                         var: $n
                       rhs: 
@@ -92,6 +95,7 @@ funcs:
                       name: binop
                       op: sub
                       lhs: 
+                        binop_type: ref int
                         name: varval
                         var: $n
                       rhs: 
@@ -105,9 +109,11 @@ funcs:
                 name: binop
                 op: add
                 lhs: 
+                  binop_type: int
                   name: varval
                   var: $a
                 rhs: 
+                  binop_type: int
                   name: varval
                   var: $b
       vdecls:
@@ -137,6 +143,7 @@ funcs:
                   name: binop
                   op: add
                   lhs: 
+                    binop_type: ref int
                     name: varval
                     var: $n
                   rhs: 
@@ -167,10 +174,10 @@ funcs:
                 op: not
                 exp:
                   binop_type: bool
-                  binop_type: bool
                   name: binop
                   op: gt
                   lhs: 
+                    binop_type: ref int
                     name: varval
                     var: $n
                   rhs: 
@@ -197,9 +204,11 @@ funcs:
                             name: binop
                             op: mul
                             lhs: 
+                              binop_type: ref int
                               name: varval
                               var: $n
                             rhs: 
+                              binop_type: ref int
                               name: varval
                               var: $n
                           rhs: 
@@ -279,6 +288,7 @@ funcs:
                   name: caststmt
                   type: int
                   exp:
+                    binop_type: float
                     name: varval
                     var: $test2
             -
@@ -294,6 +304,7 @@ funcs:
             -
               name: print
               exp:
+                binop_type: int
                 name: varval
                 var: $val
             -
@@ -309,11 +320,13 @@ funcs:
                   name: exps
                   exps:
                     -
+                      binop_type: int
                       name: varval
                       var: $val
             -
               name: print
               exp:
+                binop_type: int
                 name: varval
                 var: $val
             -
@@ -329,11 +342,13 @@ funcs:
                   name: exps
                   exps:
                     -
+                      binop_type: int
                       name: varval
                       var: $val
             -
               name: print
               exp:
+                binop_type: int
                 name: varval
                 var: $val
             -
