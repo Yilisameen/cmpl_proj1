@@ -5,7 +5,7 @@ funcs:
   funcs:
     -
       name: func
-      ret_type: int
+      ret_type: float
       globid: fib
       blk:
         name: blk
@@ -136,6 +136,61 @@ funcs:
             var: $n
     -
       name: func
+      ret_type: void
+      globid: things
+      blk:
+        name: blk
+        contents:
+          name: stmts
+          stmts:
+            -
+              name: while
+              cond:
+                name: uop
+                op: not
+                exp:
+                  name: binop
+                  op: gt
+                  lhs: 
+                    name: varval
+                    var: $n
+                  rhs: 
+                    name: lit
+                    value: 100
+              stmt:
+                name: blk
+                contents:
+                  name: stmts
+                  stmts:
+                    -
+                      name: expstmt
+                      exp:
+                        name: assign
+                        var: $n
+                        exp:
+                          name: binop
+                          op: sub
+                          lhs: 
+                            name: binop
+                            op: mul
+                            lhs: 
+                              name: varval
+                              var: $n
+                            rhs: 
+                              name: varval
+                              var: $n
+                          rhs: 
+                            name: lit
+                            value: 2
+      vdecls:
+        name: vdecls
+        vars:
+          -
+            node: vdecl
+            type: ref int
+            var: $n
+    -
+      name: func
       ret_type: int
       globid: run
       blk:
@@ -144,7 +199,14 @@ funcs:
           name: stmts
           stmts:
             -
-              name: expstmt
+              name: printslit
+              string: "fib(5):"
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $val
               exp:
                 name: funccall
                 globid: fib
@@ -154,4 +216,89 @@ funcs:
                     -
                       name: lit
                       value: 5
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $test1
+              exp:
+                name: lit
+                value: 1
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: float
+                var: $test2
+              exp:
+                name: varval
+                var: $test1
+            -
+              name: print
+              exp:
+                name: varval
+                var: $val
+            -
+              name: printslit
+              string: "fib(5)+1:"
+            -
+              name: expstmt
+              exp:
+                name: funccall
+                globid: inc
+                params: 
+                  name: exps
+                  exps:
+                    -
+                      name: varval
+                      var: $val
+            -
+              name: print
+              exp:
+                name: varval
+                var: $val
+            -
+              name: printslit
+              string: "something else:"
+            -
+              name: expstmt
+              exp:
+                name: funccall
+                globid: things
+                params: 
+                  name: exps
+                  exps:
+                    -
+                      name: varval
+                      var: $val
+            -
+              name: print
+              exp:
+                name: varval
+                var: $val
+            -
+              name: ret
+              exp:
+                name: lit
+                value: 0
+externs:
+  name: externs
+  externs:
+    -
+      name: extern
+      ret_type: int
+      globid: getarg
+      tdecls:
+        name: tdecls
+        types:
+          - int
+    -
+      name: extern
+      ret_type: float
+      globid: getargf
+      tdecls:
+        name: tdecls
+        types:
+          - int
 ...

@@ -238,9 +238,10 @@ class Exps:
 class Exp:
     def __init__(self, exp):
         self.type = 'exp'
-        #self.style = 'exp'
-        #self.catelog = catelog
         self.exp = exp
+
+    def get_type(self):
+        return self.exp.get_type()
 
     def yaml_format(self, prefix = ''):
         res = ''
@@ -259,8 +260,22 @@ class Binop:
     def __init__(self, value):
         self.type = 'binop'
         self.value = value
+
+    def get_type(self):
+        return self.value.get_type()
+
+    def node_type_check(self):
+        return self.value.node_type_check()
     
     def yaml_format(self, prefix = ''):
+        is_valid = self.node_type_check()
+        if not is_valid:
+            try:
+                raise Exception()
+            except:
+                print('error: Relevant AST 0 nodes don\'t have the correct type.')
+                sys.exit(12)
+
         if self.value.type == 'typeCast':
             res = prefix + 'name: caststmt\n'
         elif self.value.type == 'assign':
@@ -277,9 +292,14 @@ class ExpParen:
         self.type = 'expParen'
         #self.style = 'expParen'
         self.exp = exp
+
+    def get_type(self):
+        return self.exp.get_type()
     
     def yaml_format(self, prefix = ''):
         return self.exp.yaml_format(prefix)
+
+globid_type = {}
 
 class ExpGlobID:
     def __init__(self, globid, params):
@@ -287,6 +307,19 @@ class ExpGlobID:
         #self.style = 'expGlobID'
         self.globid = globid
         self.params = params
+
+    def get_type(self):
+        #print(self.yaml_format())
+        global globid_type
+        #print(globid_type)
+        globId_type = globid_type.get(self.globid, None)
+        if globId_type == None:
+            try:
+                raise Exception()
+            except:
+                print('errors: func not defined is called')
+                sys.exit(-1)
+        return globId_type
     
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: funccall\n'
@@ -301,6 +334,33 @@ class Assign:
         self.type = 'assign'
         self.var = var
         self.exp = exp
+    
+    def get_type(self):
+        if self.node_type_check():
+            return self.exp.get_type()
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 1 nodes don\'t have the correct type')
+                sys.exit(12)
+
+    def node_type_check(self):
+        print(self.yaml_format())
+        global varid_type
+        var_type = ref_type_map.get(self.var.get_type(), None)
+        exp_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
+        print(var_type)
+        print(exp_type)
+        print(varid_type)
+        if var_type != exp_type:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 2 nodes don\'t have the correct type')
+                sys.exit(12)
+        else:
+            return True
 
     def yaml_format(self, prefix = ''):
         #print(prefix + 'name: assign')
@@ -309,17 +369,52 @@ class Assign:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
+cast_list = ['int', 'cint', 'float']
+
 class TypeCast:
     def __init__(self, typename, exp):
         self.type = 'typeCast'
         self.typename = typename
         self.exp = exp
 
+    def get_type(self):
+        if self.node_type_check():
+            return self.typename.value
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 3 nodes don\'t have the correct type')
+                sys.exit(12)
+    
+    def node_type_check(self):
+        exp_type = self.exp.get_type()
+        global cast_list
+        if exp_type in cast_list and self.typename.value in cast_list:
+            return True
+        elif exp_type == 'bool' and self.typename.value == 'bool':
+            return True
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 4 nodes don\'t have the correct type')
+                sys.exit(12)
+
     def yaml_format(self, prefix = ''):
         res = self.typename.yaml_format(prefix)
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
+
+ref_type_map = {
+    'int': 'int',
+    'ref int': 'int',
+    'cint': 'cint',
+    'ref cint' : 'cint',
+    'float' : 'float',
+    'nref float' : 'float',
+}
 
 class ArithOps:
     def __init__(self, op, lhs, rhs):
@@ -328,12 +423,36 @@ class ArithOps:
         self.lhs = lhs
         self.rhs = rhs
 
+    def get_type(self):
+        if self.node_type_check():
+            return ref_type_map.get(self.lhs.get_type(), None)
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 5nodes don\'t have the correct type')
+                sys.exit(12)
+
+    def node_type_check(self):
+        global ref_type_map
+        left_type = ref_type_map.get(self.lhs.get_type(), None)
+        right_type = ref_type_map.get(self.rhs.get_type(), None)
+        if left_type == right_type and left_type != None and right_type != None:
+            return True
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 6nodes don\'t have the correct type')
+                sys.exit(12)
+            
+
     def yaml_format(self, prefix = ''):
         res = prefix + 'op: ' + self.op + '\n'
         res = res + prefix + 'lhs: \n'
         res = res + self.lhs.yaml_format(prefix + '  ')
-        res = res + prefix + 'rhs: '
-        res = res + self.lsh.yaml_format(prefix + '  ')
+        res = res + prefix + 'rhs: \n'
+        res = res + self.rhs.yaml_format(prefix + '  ')
         return res
 
 class LogicOps:
@@ -342,6 +461,29 @@ class LogicOps:
         self.op = op
         self.lhs = lhs
         self.rhs = rhs
+    
+    def get_type(self):
+        if self.node_type_check():
+            return 'bool'
+        else:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 7nodes don\'t have the correct type')
+                sys.exit(12)
+
+    def node_type_check(self):
+        #print(self.yaml_format())
+        left_type = ref_type_map.get(self.lhs.get_type(), None)
+        right_type = ref_type_map.get(self.rhs.get_type(), None)
+        if left_type != right_type and left_type != None and right_type != None:
+            try:
+                raise Exception()
+            except:
+                print('errors: Relevant AST 8nodes don\'t have the correct type')
+                sys.exit(12)
+        else:
+            return True
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'op: ' + self.op + '\n'
@@ -357,6 +499,16 @@ class Uop:
         self.exp = exp
         self.op = op
 
+    def get_type(self):
+        #print(self.yaml_format())
+        if self.op == 'not' and self.exp.get_type() != 'bool':
+            try:
+                raise Exception()
+            except:
+                print('errors: type of uop is not bool')
+                sys.exit(-1)
+        return 'bool'
+
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: uop\n'
         res = res + prefix + 'op: ' + self.op + '\n'
@@ -369,6 +521,14 @@ class Lit:
     def __init__(self, value):
         self.type = 'lit'
         self.value = value
+
+    def get_type(self):
+        if self.value == 'true' or self.value ==  'false':
+            return 'bool'
+        elif '.' in self.value:
+            return 'float'
+        else:
+            return 'int'
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: lit\n'
@@ -428,10 +588,24 @@ class Vdecl:
         res = res + self.typename.yaml_format(prefix) + self.var.yaml_format(prefix)
         return res
 
+varid_type = {}
+
 class Varid:
     def __init__(self, value):
         self.type = 'varid'
         self.value = value
+
+    def get_type(self):
+        global varid_type
+        var_type = varid_type.get(self.value, None)
+        if var_type == None:
+            try:
+                raise Exception()
+            except:
+                print('errors: varid used before define')
+                sys.exit(-1)
+        else:
+            return var_type
     
     def yaml_format(self, prefix = ''):
         res = prefix + 'var: ' + self.value + '\n'
@@ -519,6 +693,8 @@ def p_extern(p):
     else:
         p[0] = External(p[2].value, p[3], p[5])
     externals.append(p[3])
+    globid_type[p[3]] = p[2].value
+
 
 def p_func(p):
     '''
@@ -558,6 +734,7 @@ def p_func(p):
     else:
         p[0] = Function(p[2].value, p[3], p[7], p[5])
     functions.append(p[3])
+    globid_type[p[3]] = p[2].value
 
 def p_blk(p):
     '''
@@ -691,13 +868,13 @@ def p_arithOps(p):
                 | EXP PLUS EXP
                 | EXP MINUS EXP'''
     if p[2] == '*':
-        p[0] = LogicOps('mul', p[1], p[3])
+        p[0] = ArithOps('mul', p[1], p[3])
     elif p[2] == '/':
-        p[0] = LogicOps('div', p[1], p[3])
+        p[0] = ArithOps('div', p[1], p[3])
     elif p[2] == '+':
-        p[0] = LogicOps('add', p[1], p[3])
+        p[0] = ArithOps('add', p[1], p[3])
     elif p[2] == '-':
-        p[0] = LogicOps('sub', p[1], p[3])
+        p[0] = ArithOps('sub', p[1], p[3])
 
 def p_logicOps(p):
     '''LOGICOPS : EXP EQUALITY EXP
@@ -753,6 +930,7 @@ def p_vdecls(p):
 def p_vdecl(p):
     '''VDECL : TYPE VARID'''
     p[0] = Vdecl(p[1], p[2], p[1].is_ref)
+    varid_type[p[2].value] = p[1].value
 
 
 def p_varid(p):
