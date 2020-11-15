@@ -2,6 +2,7 @@ import ply.yacc as yacc
 import sys, traceback
 
 from lexer import tokens
+from llvmlite import ir
 
 class Progress:
     def __init__(self, funcs, externs=[]):
@@ -253,6 +254,10 @@ class Exps:
             res = res + self.exps[i].yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder):
+        for exp in self.exps:
+            exp.eval(module, builder)
+
 class Exp:
     def __init__(self, exp):
         self.type = 'exp'
@@ -275,6 +280,9 @@ class Exp:
                 sys.exit(8)
         res = res + self.exp.yaml_format(prefix)
         return res
+
+    def eval(self, module, builder):
+        return self.exp.eval(module, builder)
 
 class Binop:
     def __init__(self, value):
@@ -307,6 +315,9 @@ class Binop:
         res = res + self.value.yaml_format(prefix)
         return res
 
+    def eval(self, module, builder):
+        return self.value.eval(module, builder)
+
 class ExpParen:
     def __init__(self, exp):
         self.type = 'expParen'
@@ -317,6 +328,9 @@ class ExpParen:
     
     def yaml_format(self, prefix = ''):
         return self.exp.yaml_format(prefix)
+
+    def eval(self, module, builder):
+        return self.exp.eval(module, builder)
 
 globid_type = {}
 
@@ -379,6 +393,8 @@ class Assign:
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
+    
+
 
 cast_list = ['int', 'cint', 'float']
 
@@ -417,6 +433,16 @@ class TypeCast:
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
+
+    def eval(self, module, builder):
+        cast_to_type = self.typename.value
+        cast_from_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
+        i_exp = self.exp.eval(module, builder)
+        if cast_to_type == 'int' and cast_from_type == 'float':
+            i = builder.fptosi(i_exp, ir.IntType(32))
+        elif cast_to_type == 'float' and cast_from_type == 'int':
+            i = builder.sitofp(i_exp, ir.FloatType())
+        return i
 
 ref_type_map = {
     'int': 'int',
@@ -469,6 +495,31 @@ class ArithOps:
         res = res + self.rhs.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder):
+        value_type = self.get_type()
+        i_lhs = self.lhs.eval(module, builder)
+        i_rhs = self.rhs.eval(module, builder)
+        if value_type == 'int':
+            if self.op == 'add':
+                i = builder.add(i_lhs, i_rhs)
+            elif self.op == 'sub':
+                i = builder.sub(i_lhs, i_rhs)
+            elif self.op == 'mul':
+                i = builder.mul(i_lhs, i_rhs)
+            elif self.op == 'div':
+                i = builder.sdiv(i_lhs, i_rhs)
+        elif value_type == 'float':
+            if self.op == 'add':
+                i = builder.fadd(i_lhs, i_rhs)
+            elif self.op == 'sub':
+                i = builder.fsub(i_lhs, i_rhs)
+            elif self.op == 'mul':
+                i = builder.fmul(i_lhs, i_rhs)
+            elif self.op == 'div':
+                i = builder.fdiv(i_lhs, i_rhs)
+        return i
+
+
 class LogicOps:
     def __init__(self, op, lhs, rhs):
         self.type = 'logicOps'
@@ -516,6 +567,35 @@ class LogicOps:
         res = res + self.rhs.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder):
+        value_type = self.lhs.get_type()
+        i_lhs = self.lhs.eval(module, builder)
+        i_rhs = self.rhs.eval(module, builder)
+        # print(value_type)
+        # print(self.op)
+        if value_type == 'int':
+            if self.op == 'eq':
+                i = builder.icmp_signed('==', i_lhs, i_rhs)
+            elif self.op == 'gt':
+                i = builder.icmp_signed('>', i_lhs, i_rhs)
+            elif self.op =='lt':
+                i = builder.icmp_signed('<', i_lhs, i_rhs)
+        elif value_type == 'float':
+            if self.op == 'eq':
+                i = builder.fcmp_ordered('==', i_lhs, i_rhs)
+            elif self.op == 'gt':
+                i = builder.fcmp_ordered('>', i_lhs, i_rhs)
+            elif self.op =='lt':
+                i = builder.fcmp_ordered('<', i_lhs, i_rhs)
+        elif value_type == 'bool':
+            if self.op == 'eq':
+                i = builder.fcmp_ordered('==', i_lhs, i_rhs)
+            elif self.op == 'and':
+                i = builder.and_(i_lhs, i_rhs)
+            elif self.op == 'or':
+                i = builder.or_(i_lhs, i_rhs)
+        return i
+
 class Uop:
     def __init__(self, exp, op):
         self.type = 'uop'
@@ -538,6 +618,13 @@ class Uop:
         prefix = prefix + '  '
         res = res + self.exp.yaml_format(prefix)
         return res
+    
+    def eval(self, module, builder):
+        if self.op == 'not':
+            i = builder.not_(self.exp.eval(module, builder))
+        elif self.op == 'minus':
+            i = builder.neg(self.exp.eval(module, builder))
+        return i
 
 class Lit:
     def __init__(self, value):
@@ -556,6 +643,20 @@ class Lit:
         res = prefix + 'name: lit\n'
         res = res + prefix + 'value: ' + self.value + '\n'
         return res
+
+    def eval(self, builder, module):
+        lit_type = self.get_type()
+        # print(lit_type)
+        if lit_type == 'bool':
+            if self.value == 'true':
+                i = ir.Constant(ir.IntType(1), 1)
+            elif self.value == 'false':
+                i = ir.Constant(ir.IntType(1), 0)
+        elif lit_type == 'float':
+            i = ir.Constant(ir.FloatType(), float(self.value))
+        elif lit_type == 'int':
+            i = ir.Constant(ir.IntType(32), int(self.value))
+        return i
 
 class Tdecls:
     def __init__(self, typename):
@@ -592,6 +693,10 @@ class Vdecls:
             res  = res + self.vars[i].yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder):
+        for vdecl in self.vars:
+            vdecl.eval(module, builder)
+
 class Vdecl:
     def __init__(self, typename, var, is_ref = False):
         self.type = 'vdecl'
@@ -609,6 +714,30 @@ class Vdecl:
         res = prefix + 'node: vdecl\n' 
         res = res + self.typename.yaml_format(prefix) + self.var.yaml_format(prefix)
         return res
+
+    def eval(self, module, builder):
+        var_type = self.typename.value
+        var_name = self.var.value
+        is_ref = self.is_ref
+        print(var_type)
+        print(var_name)
+        if is_ref:
+            if 'int' in var_type:
+                var_ptr = builder.alloca(ir.PointerType(ir.IntType(32)))
+            elif 'float' in var_type:
+                var_ptr = builder.alloca(ir.PointerType(ir.FloatType()))
+            elif 'bool' in var_type:
+                var_ptr = builder.alloca(ir.PointerType(ir.IntType(1)))
+        else:
+            if var_type == 'int':
+                var_ptr = builder.alloca(ir.IntType(32))
+            elif var_type == 'float':
+                var_ptr = builder.alloca(ir.FloatType())
+            elif var_type == 'bool':
+                var_ptr = builder.alloca(ir.IntType(1))
+        varid_symbol_ptr_table[var_name] = var_ptr
+
+    
 
 varid_type = {}
 
@@ -632,6 +761,14 @@ class Varid:
     def yaml_format(self, prefix = ''):
         res = prefix + 'var: ' + self.value + '\n'
         return res
+
+    def eval(self, module, builder):
+        var_name = self.value
+        print(var_name)
+
+
+varid_symbol_ptr_table = {}   #varid_name : pointer
+
 
 class GlobalID:
     def __init__(self, value):
@@ -1013,4 +1150,4 @@ precedence = (
     ('left', 'TIMES','DIVIDE'),
 )
 
-yacc.yacc()
+yacc.yacc(start='VDECLS')
