@@ -394,7 +394,26 @@ class Assign:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
     
+    def eval(self, module, builder): # not tested yet
+        var_name = self.var.value
+        print(var_name)
+        ptr = varid_symbol_ptr_table.get(var_name, None)
+        if ptr == None:
+            raise Exception()
+        value = self.exp.eval(module, builder)
+        if value.type.is_pointer:
+            value = builder.load(value)
+        if ptr.type.pointee == ir.IntType(32):
+            if value.type == ir.IntType(1):
+                value = builder.uitofp(value, ir.FloatType())
+            if value.type == ir.FloatType():
+                value = builder.fptosi(value, ptr.type.pointee)
+        elif ptr.type.pointee == ir.FloatType(32):
+            if value.type == ir.IntType(1) or value.type == ir.IntType(32):
+                value = builder.uitofp(value, ir.FloatType())
 
+        builder.store(value, ptr)
+        return None
 
 cast_list = ['int', 'cint', 'float']
 
@@ -762,9 +781,14 @@ class Varid:
         res = prefix + 'var: ' + self.value + '\n'
         return res
 
-    def eval(self, module, builder):
+    def eval(self, module, builder): # not tested yet
         var_name = self.value
         print(var_name)
+        ptr = varid_symbol_ptr_table.get(var_name, None)
+        if ptr == None:
+            raise Exception()
+        val = builder.load(ptr)
+        return val
 
 
 varid_symbol_ptr_table = {}   #varid_name : pointer
