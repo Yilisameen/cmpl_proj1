@@ -54,11 +54,11 @@ class Program:
         return res
 
     def eval(self, module, external_funcs):
-        for func in self.funcs.functions:
-            func.eval(module, external_funcs)
-
         for extern in self.externs.externs:
             extern.eval(module, external_funcs)
+
+        for func in self.funcs.functions:
+            func.eval(module, external_funcs)
 
 class Function:
     type = 'function'
@@ -172,9 +172,6 @@ class External:
         else:
             fnty = ir.FunctionType(ir_ret_type, args)
             func = ir.Function(module, fnty, name=self.globid)
-
-        print("funcmap")
-        print(func_map)
 
 
 class Externals:

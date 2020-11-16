@@ -13,7 +13,6 @@ parser.add_argument('-jit', action='store_true', default=False, dest='compile_ji
 parser.add_argument('-o', action='store', dest='output_file', required=False)
 parser.add_argument('sysarg', nargs='*')
 args = parser.parse_args()
-print(args.sysarg[1:])
 
 try:
     with open(args.input_file, 'r') as file:
