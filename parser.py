@@ -166,12 +166,15 @@ class External:
                 args.append(get_ir_type(typename))
 
         if self.globid == "getarg":
-            external_funcs.get_arg()
+            external_funcs.get_arg(func_map)
         elif self.globid == "getargf":
-            external_funcs.get_argf()
+            external_funcs.get_argf(func_map)
         else:
             fnty = ir.FunctionType(ir_ret_type, args)
             func = ir.Function(module, fnty, name=self.globid)
+
+        print("funcmap")
+        print(func_map)
 
 
 class Externals:

@@ -6,7 +6,7 @@ class ExternalFunctions:
 		self.sys_args = [1, 2, 3]
 		self.get_printf()
 
-	def get_arg(self):
+	def get_arg(self, func_map):
 		sys_args = [int(float(value)) for value in self.sys_args]
 
 		array_type = ir.ArrayType(ir.IntType(32), len(sys_args))
@@ -14,6 +14,8 @@ class ExternalFunctions:
 
 		fnty = ir.FunctionType(ir.IntType(32), [ir.IntType(32)])
 		func = ir.Function(self.module, fnty, name="getarg")
+		func_map["getarg"] = func
+
 		blk = func.append_basic_block("entry")
 		builder = ir.IRBuilder(blk)
 
@@ -33,7 +35,7 @@ class ExternalFunctions:
 		address = builder.gep(ptr, [int_0, value])
 		builder.ret(builder.load(address))
 
-	def get_argf(self):
+	def get_argf(self, func_map):
 		sys_args = [float(value) for value in self.sys_args]
 
 		array_type = ir.ArrayType(ir.FloatType(), len(sys_args))
@@ -41,6 +43,8 @@ class ExternalFunctions:
 
 		fnty = ir.FunctionType(ir.FloatType(), [ir.IntType(32)])
 		func = ir.Function(self.module, fnty, name="getargf")
+		func_map["getargf"] = func
+
 		blk = func.append_basic_block("entry")
 		builder = ir.IRBuilder(blk)
 

@@ -25,21 +25,6 @@ def void things (int $n) {
 }
 
 def int run () {
-    print "fib(5):";
-    int $val = fib(5);
-    print $val;
-    
-    print "fib(5)+1:";
-    
-    print $val;
-
-    print "something else:";
-    things($val);
-    print $val;
-
-    ref int $test = $val;
-    inc($test);
-
 
     return 0;
 }
