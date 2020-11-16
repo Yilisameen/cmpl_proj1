@@ -13,9 +13,8 @@ def int fib (int $n) {
     return $a + $b;
 }
 
-def int inc (noalias ref int $n) {
+def void inc (noalias ref int $n) {
   $n = $n + 1;
-  return $n;
 }
 
 def void things (int $n) {
@@ -37,6 +36,9 @@ def int run () {
     print "something else:";
     things($val);
     print $val;
+
+    ref int $test = $val;
+    inc($test);
 
 
     return 0;

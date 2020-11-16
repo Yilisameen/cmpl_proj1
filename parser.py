@@ -331,7 +331,11 @@ class VDeclStatement:
         elif var_ptr.type.pointee == ir.FloatType():
             if value.type == ir.IntType(1) or value.type == ir.IntType(32):
                 value = builder.uitofp(value, ir.FloatType())
-        builder.store(value, var_ptr)
+
+        if is_ref:
+            builder.store(value, builder.load(var_ptr))
+        else:
+            builder.store(value, var_ptr)
         return None
 
 
