@@ -15,9 +15,9 @@ def get_ir_type(typename):
     elif typename == "float":
         ir_ret_type = ir.FloatType()
     elif typename == "ref float":
-        ir_ret_type = ir.PointType(ir.FloatType())
+        ir_ret_type = ir.PointerType(ir.FloatType())
     elif typename == "noalias ref float":
-        ir_ret_type = ir.PointType(ir.FloatType())
+        ir_ret_type = ir.PointerType(ir.FloatType())
     elif typename == "bool":
         ir_ret_type = ir.IntType(1)
     elif typename == "ref bool":
@@ -713,9 +713,12 @@ class TypeCast:
         i_exp = self.exp.eval(module, builder)
         if cast_to_type == 'int' and cast_from_type == 'float':
             i = builder.fptosi(i_exp, ir.IntType(32))
+            return i
         elif cast_to_type == 'float' and cast_from_type == 'int':
             i = builder.sitofp(i_exp, ir.FloatType())
-        return i
+            return i
+        else:
+            return i_exp
 
 ref_type_map = {
     'int': 'int',
@@ -726,7 +729,10 @@ ref_type_map = {
     'noalias ref cint' : 'cint',
     'float' : 'float',
     'ref float' : 'float',
-    'noalias ref float' : 'float'
+    'noalias ref float' : 'float',
+    'bool' : 'bool',
+    'ref bool' : 'bool',
+    'noalias ref bool' : 'bool'
 }
 
 class ArithOps:
@@ -881,7 +887,7 @@ class Uop:
             except:
                 print('errors: type of uop is not bool')
                 sys.exit(-1)
-        return 'bool'
+        return self.exp.get_type()
 
     def yaml_format(self, prefix = ''):
         res = prefix + 'name: uop\n'
