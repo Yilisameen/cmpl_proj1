@@ -72,7 +72,7 @@ from llvmlite import ir
 data = '''
 def int run () {
 	int $test1 = 1;
-	return $test1;
+	return 2;
 }
 '''
 

@@ -82,15 +82,15 @@ class Function:
             ir_arg_type.append(get_ir_type(type))
 
         func_type = ir.FunctionType(ir_ret_type, ir_arg_type, False)
-        func = ir.Function(module, func_type, name=self.globid)
+        if self.globid == "run":
+            func = ir.Function(module, func_type, name="main")
+        else:
+            func = ir.Function(module, func_type, name=self.globid)
 
         for i in range(len(names)):
             func.args[i].name = names[i].value
 
-        if self.globid == "run":
-            block = func.append_basic_block('entry')
-        else:
-            block = func.append_basic_block()
+        block = func.append_basic_block('entry')
         builder = ir.IRBuilder(block)
         
         self.blk.eval(module, builder, printf) 
