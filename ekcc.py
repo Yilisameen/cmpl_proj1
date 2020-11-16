@@ -7,12 +7,12 @@ import argparse
 from ctypes import *
 
 parser = argparse.ArgumentParser()
-parser.add_argument('input_file', metavar='input_file')
-parser.add_argument('-emit-ast', action='store_true', default=False, dest='output_ast'),
-parser.add_argument('-emit-llvm', action='store_true', default=False, dest='print_ir')
-parser.add_argument('-jit', action='store_true', default=False, dest='compile_jit'),
-parser.add_argument('-o', action='store', dest='output_file', required=False)
-parser.add_argument('sysarg', nargs='*')
+parser.add_argument('input_file', metavar='input_file', help='the name of the input file your want to parse')
+parser.add_argument('-emit-ast', action='store_true', default=False, dest='output_ast', help='to save the ast into the output file'),
+parser.add_argument('-emit-llvm', action='store_true', default=False, dest='print_ir', help="to print intermediate representation to the console")
+parser.add_argument('-jit', action='store_true', default=False, dest='compile_jit', help="to compile, jit and run the code"),
+parser.add_argument('-o', action='store', dest='output_file', required=False, help='the name of the output file to store ast')
+parser.add_argument('-sysarg', nargs='*', help="system arguments for the input code")
 args = parser.parse_args()
 
 try:
