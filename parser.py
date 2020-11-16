@@ -95,6 +95,9 @@ class Function:
         
         self.blk.eval(module, builder, external_funcs) 
 
+
+        # builder.ret(ir.Constant(ir.IntType(32), 0))
+
 class Functions:
     def __init__(self, functions):
         self.type = 'functions'
@@ -194,11 +197,10 @@ class Statements:
             if stmt.stmt_type == "return_statement":
                 returned = True
                 builder.ret(stmt.eval(module, builder, external_funcs))
+                return
             else:
                 stmt.eval(module, builder, external_funcs)
-
-        if not returned:
-            builder.ret_void()
+        builder.ret_void()
 
 class BlkStatement:
     def __init__(self, blk):
