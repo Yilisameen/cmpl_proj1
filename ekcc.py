@@ -2,6 +2,7 @@ import parser
 import ply.yacc as yacc
 import sys
 from llvmlite import ir
+from externs import ExternalFunctions
 
 # flags = ['-h', '-?', '-v', '-O', '-emit-ast', '-emit-llvm', '-o']
 
@@ -70,8 +71,13 @@ from llvmlite import ir
 # '''
 
 data = '''
+extern int getarg(int);
+extern float getargf(int);
+
+def int test2(){}
+
 def int run () {
-	int $test1 = 1;
+	print 1;
 	return 2;
 }
 '''
@@ -83,11 +89,12 @@ module = ir.Module(name=__file__)
 # block = base_func.append_basic_block(name="entry")
 # builder = ir.IRBuilder(block)
 
+external_funcs = ExternalFunctions(module, sys.argv)
 
 # ast = yacc.parse(data, debug = False).yaml_format()
 # print(type(yacc.parse(data, debug = False)))
 printf = None
-yacc.parse(data, debug = False).eval(module, printf)
+yacc.parse(data, debug = False).eval(module, external_funcs)
 # eval(builder)
 print(module)
 # with open(output_file_name, 'w') as file:

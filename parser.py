@@ -40,12 +40,12 @@ class Program:
 
         return res
 
-    def eval(self, module, printf):
+    def eval(self, module, external_funcs):
         for func in self.funcs.functions:
-            func.eval(module, printf)
+            func.eval(module, external_funcs)
 
         for extern in self.externs.externs:
-            extern.eval(module, printf)
+            extern.eval(module, external_funcs)
 
 class Function:
     type = 'function'
@@ -66,7 +66,7 @@ class Function:
             res = res + self.vdecls.yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, printf):
+    def eval(self, module, external_funcs):
         types = []
         names = []
 
@@ -93,7 +93,7 @@ class Function:
         block = func.append_basic_block('entry')
         builder = ir.IRBuilder(block)
         
-        self.blk.eval(module, builder, printf) 
+        self.blk.eval(module, builder, external_funcs) 
 
 class Functions:
     def __init__(self, functions):
@@ -127,6 +127,23 @@ class External:
             res = res + self.tdecls.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, external_funcs):
+        ir_ret_type = get_ir_type(self.ret_type)
+
+        args = []
+        if self.tdecls:
+            for type in self.tdecls.types:
+                args.append(get_ir_type(type))
+
+        if self.globid == "getarg":
+            external_funcs.get_arg()
+        elif self.globid == "getargf":
+            external_funcs.get_argf()
+        else:
+            fnty = ir.FunctionType(ir_ret_type, args)
+            func = ir.Function(module, fnty, name=self.globid)
+
+
 class Externals:
     def __init__(self, externs):
         self.type = 'externs'
@@ -155,8 +172,8 @@ class Blk:
             res = res + self.stmts.yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder, printf):
-        self.stmts.eval(module, builder, printf)
+    def eval(self, module, builder, external_funcs):
+        self.stmts.eval(module, builder, external_funcs)
 
 class Statements:
     def __init__(self, stmts=[]):
@@ -170,15 +187,15 @@ class Statements:
             res = res + stmt.yaml_format(prefix + '    ')
         return res
 
-    def eval(self, module, builder, printf):
+    def eval(self, module, builder, external_funcs):
         returned = False
 
         for stmt in self.stmts:
             if stmt.stmt_type == "return_statement":
                 returned = True
-                builder.ret(stmt.eval(module, builder, printf))
+                builder.ret(stmt.eval(module, builder, external_funcs))
             else:
-                stmt.eval(module, builder, printf)
+                stmt.eval(module, builder, external_funcs)
 
         if not returned:
             builder.ret_void()
@@ -192,8 +209,8 @@ class BlkStatement:
         res = self.blk.yaml_format(prefix)
         return res
 
-    def eval(self, module, builder, printf):
-        self.blk.eval(module, builder, printf)
+    def eval(self, module, builder, external_funcs):
+        self.blk.eval(module, builder, external_funcs)
 
 class ReturnStatement:
     def __init__(self, exp=None):
@@ -209,7 +226,7 @@ class ReturnStatement:
 
         return res
 
-    def eval(self, module, builder, printf):
+    def eval(self, module, builder, external_funcs):
         return self.exp.eval(module, builder)
 
 class VDeclStatement:
@@ -252,7 +269,7 @@ class VDeclStatement:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder, printf):
+    def eval(self, module, builder, external_funcs):
         type = get_ir_type(self.vdecl.typename.value)
 
         builder.alloca(type, size=None, name=self.vdecl.var.value)
@@ -268,8 +285,8 @@ class ExpSemiStatement:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder, printf):
-        self.exp.eval(module, builder, printf)
+    def eval(self, module, builder, external_funcs):
+        self.exp.eval(module, builder)
 
 class WhileStatement:
     def __init__(self, exp, stmt):
@@ -314,6 +331,13 @@ class PrintExpStatement:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder, external_funcs):
+        value = self.exp.eval(module, builder)
+        if value.type == ir.IntType(32):
+            builder.call(external_funcs.print_int, [value])
+        elif value.type == ir.FloatType():
+            builder.call(external_funcs.print_float, [value])
+
 class PrintSLitStatement:
     def __init__(self, slit):
         self.slit = slit 
@@ -323,6 +347,29 @@ class PrintSLitStatement:
         res = prefix + 'name: printslit\n'
         res = res + prefix + 'string: ' + self.slit + '\n'
         return res
+
+    def eval(self, module, builder, external_funcs):
+        if len(self.slit) == 0:
+            return None
+
+        b = self.slit.encode("ascii")
+        b = bytearray(b)
+
+        s_bytes = ir.Constant(ir.ArrayType(ir.IntType(8), len(b)), b)
+
+        global_fmt = find_global_constant(builder, self.slit, s_bytes)
+        ptr_fmt = builder.bitcast(global_fmt, ir.IntType(8).as_pointer())
+        
+        builder.call(external_funcs.print_string, [ptr_fmt])
+
+def find_global_constant(builder, name, value):
+    if name in builder.module.globals:
+        return builder.module.globals(name)
+    else:
+        var = ir.GlobalVariable(builder.module, value.type, name = name)
+        var.global_constant = True
+        var.initializer = value
+        return var
 
 class Exps:
     def __init__(self, exp):
