@@ -80,6 +80,8 @@ class Function:
         return res
 
     def eval(self, module, external_funcs):
+        global varid_symbol_ptr_table
+        varid_symbol_ptr_table = {}
         types = []
         names = []
 
