@@ -4,6 +4,7 @@ import sys
 from llvmlite import ir, binding
 from externs import ExternalFunctions
 import argparse
+from ctypes import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('input_file', metavar='input_file')
@@ -58,5 +59,8 @@ if args.compile_jit:
     mod.verify()
     engine.add_module(mod)
     engine.finalize_object()
-    engine.run_static_constructors()
+    entry = engine.get_function_address("main")
+    cfunc = CFUNCTYPE(c_int)(entry)
+    result = cfunc()
+    print("program result:{}".format(result))
 
