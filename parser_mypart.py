@@ -1,21 +1,7 @@
 import ply.yacc as yacc
 import sys, traceback
-
 from lexer import tokens
-from llvmlite import ir
-
-def get_ir_type(typename):
-    ir_ret_type = None
-    if typename == "int":
-        ir_ret_type = ir.IntType(32)
-    elif typename == "float":
-        ir_ret_type = ir.FloatType()
-    elif typename == "ref int":
-        ir_ret_type = ir.IntType(32)
-    elif typename == "ref float":
-        ir_ret_type = ir.FloatType()
-
-    return ir_ret_type
+from llvmlite import ir, binding
 
 class Program:
     def __init__(self, funcs, externs=[]):
@@ -34,6 +20,7 @@ class Program:
         res = res + 'funcs:\n'
         res = res + self.funcs.yaml_format('  ')
 
+
         if self.externs.externs:
             res = res + 'externs:\n'
             res = res + self.externs.yaml_format('  ')
@@ -46,6 +33,20 @@ class Program:
 
         for extern in self.externs.externs:
             extern.eval(module, printf)
+        
+def get_ir_type(typename):
+    ir_ret_type = None
+    if typename == "int":
+        ir_ret_type = ir.IntType(32)
+    elif typename == "float":
+        ir_ret_type = ir.FloatType()
+    elif typename == "ref int":
+        ir_ret_type = ir.IntType(32)
+    elif typename == "ref float":
+        ir_ret_type = ir.FloatType()
+
+    return ir_ret_type
+
 
 class Function:
     type = 'function'
@@ -95,6 +96,7 @@ class Function:
         
         self.blk.eval(module, builder, printf) 
 
+
 class Functions:
     def __init__(self, functions):
         self.type = 'functions'
@@ -127,6 +129,11 @@ class External:
             res = res + self.tdecls.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, printf):
+        a = 1
+        # func_type = ir.FunctionType(ir_ret_type, types, False)
+        # func = ir.Function(module, func_type, name=self.globid)
+
 class Externals:
     def __init__(self, externs):
         self.type = 'externs'
@@ -158,6 +165,7 @@ class Blk:
     def eval(self, module, builder, printf):
         self.stmts.eval(module, builder, printf)
 
+
 class Statements:
     def __init__(self, stmts=[]):
         self.stmts = stmts
@@ -182,6 +190,7 @@ class Statements:
 
         if not returned:
             builder.ret_void()
+
 
 class BlkStatement:
     def __init__(self, blk):
@@ -210,7 +219,8 @@ class ReturnStatement:
         return res
 
     def eval(self, module, builder, printf):
-        return self.exp.eval(module, builder)
+        # return self.exp.eval(module, builder)
+        return ir.Constant(ir.IntType(32), 100)
 
 class VDeclStatement:
     def __init__(self, vdecl, exp):
@@ -237,7 +247,6 @@ class VDeclStatement:
                 sys.exit(12)
         return True
             
-
     def yaml_format(self, prefix = ''):
         if not self.node_type_check():
             try:
@@ -267,9 +276,9 @@ class ExpSemiStatement:
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
-
     def eval(self, module, builder, printf):
-        self.exp.eval(module, builder, printf)
+        # self.exp.eval(module, builder, printf)
+        return "exp eval stub"
 
 class WhileStatement:
     def __init__(self, exp, stmt):
@@ -284,6 +293,11 @@ class WhileStatement:
         res = res + prefix + 'stmt:\n'
         res = res + self.stmt.yaml_format(prefix + '  ')
         return res
+
+    def eval(self, module, builder, printf):
+        while True:
+        # while self.exp.eval(module, builder, printf) == True:
+            self.stmt.eval(module, builder, printf)
 
 class IfStatement:
     def __init__(self, exp, stmt1, stmt2=None):
@@ -303,6 +317,14 @@ class IfStatement:
             res = res + self.stmt2.yaml_format(prefix + '  ')
         return res 
 
+    def eval(self, module, builder, printf):
+        if True:
+        # if self.exp.eval(module, builder) == True:
+            self.stmt1.eval(module, builder, printf)
+        elif self.stmt2:
+            self.stmt2.eval(module, builder, printf)
+
+
 class PrintExpStatement:
     def __init__(self, exp):
         self.exp = exp 
@@ -314,6 +336,25 @@ class PrintExpStatement:
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder, printf):
+        a = 1
+        # value = self.exp.eval(module, builder)
+        # value = "exp eval stub"
+
+        # # Declare argument list
+        # voidptr_ty = ir.IntType(8).as_pointer()
+        # fmt = "%i \n\0"
+        # c_fmt = ir.Constant(ir.ArrayType(ir.IntType(8), len(fmt)),
+        #                     bytearray(fmt.encode("utf8")))
+        # global_fmt = ir.GlobalVariable(module, c_fmt.type, name="fexpstmt")
+        # global_fmt.linkage = 'internal'
+        # global_fmt.global_constant = True
+        # global_fmt.initializer = c_fmt
+        # fmt_arg = builder.bitcast(global_fmt, voidptr_ty)
+
+        # builder.call(printf, [fmt_arg, value])
+
+
 class PrintSLitStatement:
     def __init__(self, slit):
         self.slit = slit 
@@ -323,6 +364,20 @@ class PrintSLitStatement:
         res = prefix + 'name: printslit\n'
         res = res + prefix + 'string: ' + self.slit + '\n'
         return res
+
+    def eval(self, module, builder, printf):
+        a = 1
+        # voidptr_ty = ir.IntType(8).as_pointer()
+        # fmt = "%i \n\0"
+        # c_fmt = ir.Constant(ir.ArrayType(ir.IntType(8), len(fmt)),
+        #                     bytearray(fmt.encode("utf8")))
+        # global_fmt = ir.GlobalVariable(module, c_fmt.type, name="fslit")
+        # global_fmt.linkage = 'internal'
+        # global_fmt.global_constant = True
+        # global_fmt.initializer = c_fmt
+        # fmt_arg = builder.bitcast(global_fmt, voidptr_ty)
+
+        # builder.call(printf, [fmt_arg, self.slit])
 
 class Exps:
     def __init__(self, exp):
@@ -340,10 +395,6 @@ class Exps:
             res = res + prefix + '-\n'
             res = res + self.exps[i].yaml_format(prefix + '  ')
         return res
-
-    def eval(self, module, builder):
-        for exp in self.exps:
-            exp.eval(module, builder)
 
 class Exp:
     def __init__(self, exp):
@@ -367,9 +418,6 @@ class Exp:
                 sys.exit(8)
         res = res + self.exp.yaml_format(prefix)
         return res
-
-    def eval(self, module, builder):
-        return self.exp.eval(module, builder)
 
 class Binop:
     def __init__(self, value):
@@ -402,9 +450,6 @@ class Binop:
         res = res + self.value.yaml_format(prefix)
         return res
 
-    def eval(self, module, builder):
-        return self.value.eval(module, builder)
-
 class ExpParen:
     def __init__(self, exp):
         self.type = 'expParen'
@@ -415,9 +460,6 @@ class ExpParen:
     
     def yaml_format(self, prefix = ''):
         return self.exp.yaml_format(prefix)
-
-    def eval(self, module, builder):
-        return self.exp.eval(module, builder)
 
 globid_type = {}
 
@@ -445,20 +487,6 @@ class ExpGlobID:
             res = res + prefix + 'params: \n'
             res = res + self.params.yaml_format(prefix + '  ')
         return res
-
-    def eval(self, module, builder): # not tested yet
-        func_name = self.globid.value
-        func = func_map.get(func_name, None)
-        if func == None:
-            raise Exception() # not catched yet
-        args = []
-        if args != None:
-            for exp in self.params:
-                args.append(exp.eval(module, builder))
-        i = builder.call(func, args)
-        return i
-
-func_map = {}  #funcname : func
 
 class Assign:
     def __init__(self, var, exp):
@@ -494,26 +522,6 @@ class Assign:
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
-    
-    def eval(self, module, builder): # not tested yet
-        var_name = self.var.value
-        ptr = varid_symbol_ptr_table.get(var_name, None)
-        if ptr == None:
-            raise Exception()
-        value = self.exp.eval(module, builder)
-        if value.type.is_pointer:
-            value = builder.load(value)
-        if ptr.type.pointee == ir.IntType(32):
-            if value.type == ir.IntType(1):
-                value = builder.uitofp(value, ir.FloatType())
-            if value.type == ir.FloatType():
-                value = builder.fptosi(value, ptr.type.pointee)
-        elif ptr.type.pointee == ir.FloatType(32):
-            if value.type == ir.IntType(1) or value.type == ir.IntType(32):
-                value = builder.uitofp(value, ir.FloatType())
-
-        builder.store(value, ptr)
-        return None
 
 cast_list = ['int', 'cint', 'float']
 
@@ -552,16 +560,6 @@ class TypeCast:
         res = res + prefix + 'exp:\n'
         res = res + self.exp.yaml_format(prefix + '  ')
         return res
-
-    def eval(self, module, builder):
-        cast_to_type = self.typename.value
-        cast_from_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
-        i_exp = self.exp.eval(module, builder)
-        if cast_to_type == 'int' and cast_from_type == 'float':
-            i = builder.fptosi(i_exp, ir.IntType(32))
-        elif cast_to_type == 'float' and cast_from_type == 'int':
-            i = builder.sitofp(i_exp, ir.FloatType())
-        return i
 
 ref_type_map = {
     'int': 'int',
@@ -614,31 +612,6 @@ class ArithOps:
         res = res + self.rhs.yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder):
-        value_type = self.get_type()
-        i_lhs = self.lhs.eval(module, builder)
-        i_rhs = self.rhs.eval(module, builder)
-        if value_type == 'int':
-            if self.op == 'add':
-                i = builder.add(i_lhs, i_rhs)
-            elif self.op == 'sub':
-                i = builder.sub(i_lhs, i_rhs)
-            elif self.op == 'mul':
-                i = builder.mul(i_lhs, i_rhs)
-            elif self.op == 'div':
-                i = builder.sdiv(i_lhs, i_rhs)
-        elif value_type == 'float':
-            if self.op == 'add':
-                i = builder.fadd(i_lhs, i_rhs)
-            elif self.op == 'sub':
-                i = builder.fsub(i_lhs, i_rhs)
-            elif self.op == 'mul':
-                i = builder.fmul(i_lhs, i_rhs)
-            elif self.op == 'div':
-                i = builder.fdiv(i_lhs, i_rhs)
-        return i
-
-
 class LogicOps:
     def __init__(self, op, lhs, rhs):
         self.type = 'logicOps'
@@ -664,6 +637,7 @@ class LogicOps:
                 try:
                     raise Exception()
                 except:
+                    print(self.op)
                     print('errors: Relevant AST 6nodes don\'t have the correct type')
                     sys.exit(12)
         left_type = ref_type_map.get(self.lhs.get_type(), None)
@@ -684,35 +658,6 @@ class LogicOps:
         res = res + prefix + 'rhs: \n'
         res = res + self.rhs.yaml_format(prefix + '  ')
         return res
-
-    def eval(self, module, builder):
-        value_type = self.lhs.get_type()
-        i_lhs = self.lhs.eval(module, builder)
-        i_rhs = self.rhs.eval(module, builder)
-        # print(value_type)
-        # print(self.op)
-        if value_type == 'int':
-            if self.op == 'eq':
-                i = builder.icmp_signed('==', i_lhs, i_rhs)
-            elif self.op == 'gt':
-                i = builder.icmp_signed('>', i_lhs, i_rhs)
-            elif self.op =='lt':
-                i = builder.icmp_signed('<', i_lhs, i_rhs)
-        elif value_type == 'float':
-            if self.op == 'eq':
-                i = builder.fcmp_ordered('==', i_lhs, i_rhs)
-            elif self.op == 'gt':
-                i = builder.fcmp_ordered('>', i_lhs, i_rhs)
-            elif self.op =='lt':
-                i = builder.fcmp_ordered('<', i_lhs, i_rhs)
-        elif value_type == 'bool':
-            if self.op == 'eq':
-                i = builder.fcmp_ordered('==', i_lhs, i_rhs)
-            elif self.op == 'and':
-                i = builder.and_(i_lhs, i_rhs)
-            elif self.op == 'or':
-                i = builder.or_(i_lhs, i_rhs)
-        return i
 
 class Uop:
     def __init__(self, exp, op):
@@ -736,13 +681,6 @@ class Uop:
         prefix = prefix + '  '
         res = res + self.exp.yaml_format(prefix)
         return res
-    
-    def eval(self, module, builder):
-        if self.op == 'not':
-            i = builder.not_(self.exp.eval(module, builder))
-        elif self.op == 'minus':
-            i = builder.neg(self.exp.eval(module, builder))
-        return i
 
 class Lit:
     def __init__(self, value):
@@ -761,20 +699,6 @@ class Lit:
         res = prefix + 'name: lit\n'
         res = res + prefix + 'value: ' + self.value + '\n'
         return res
-
-    def eval(self, builder, module):
-        lit_type = self.get_type()
-        # print(lit_type)
-        if lit_type == 'bool':
-            if self.value == 'true':
-                i = ir.Constant(ir.IntType(1), 1)
-            elif self.value == 'false':
-                i = ir.Constant(ir.IntType(1), 0)
-        elif lit_type == 'float':
-            i = ir.Constant(ir.FloatType(), float(self.value))
-        elif lit_type == 'int':
-            i = ir.Constant(ir.IntType(32), int(self.value))
-        return i
 
 class Tdecls:
     def __init__(self, typename):
@@ -811,10 +735,6 @@ class Vdecls:
             res  = res + self.vars[i].yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder):
-        for vdecl in self.vars:
-            vdecl.eval(module, builder)
-
 class Vdecl:
     def __init__(self, typename, var, is_ref = False):
         self.type = 'vdecl'
@@ -832,30 +752,6 @@ class Vdecl:
         res = prefix + 'node: vdecl\n' 
         res = res + self.typename.yaml_format(prefix) + self.var.yaml_format(prefix)
         return res
-
-    def eval(self, module, builder):
-        var_type = self.typename.value
-        var_name = self.var.value
-        is_ref = self.is_ref
-        print(var_type)
-        print(var_name)
-        if is_ref:
-            if 'int' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.IntType(32)))
-            elif 'float' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.FloatType()))
-            elif 'bool' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.IntType(1)))
-        else:
-            if var_type == 'int':
-                var_ptr = builder.alloca(ir.IntType(32))
-            elif var_type == 'float':
-                var_ptr = builder.alloca(ir.FloatType())
-            elif var_type == 'bool':
-                var_ptr = builder.alloca(ir.IntType(1))
-        varid_symbol_ptr_table[var_name] = var_ptr
-
-    
 
 varid_type = {}
 
@@ -879,19 +775,6 @@ class Varid:
     def yaml_format(self, prefix = ''):
         res = prefix + 'var: ' + self.value + '\n'
         return res
-
-    def eval(self, module, builder): # not tested yet
-        var_name = self.value
-        print(var_name)
-        ptr = varid_symbol_ptr_table.get(var_name, None)
-        if ptr == None:
-            raise Exception()
-        val = builder.load(ptr)
-        return val
-
-
-varid_symbol_ptr_table = {}   #varid_name : pointer
-
 
 class GlobalID:
     def __init__(self, value):
@@ -918,9 +801,9 @@ functions = []
 has_run_function = []
 
 ### funcs ###
-def p_prog(p):
+def p_proc(p):
     """
-    PROG : FUNCS
+    PROC : FUNCS
         | EXTERNS FUNCS
     """
     if not has_run_function:

@@ -65,21 +65,29 @@ from llvmlite import ir
 
 
 # (2.3 + 3.6 / 5.0), 2.3 + 6.0
+# data = '''
+# int $test, ref int $test3
+# '''
+
 data = '''
-int $test, ref int $test3
+def int run () {
+	int $test1 = 1;
+	return $test1;
+}
 '''
 
 module = ir.Module(name=__file__)
 # module.triple = self.binding.get_default_triple()
-func_type = ir.FunctionType(ir.VoidType(), [], False)
-base_func = ir.Function(module, func_type, name="main")
-block = base_func.append_basic_block(name="entry")
-builder = ir.IRBuilder(block)
+# func_type = ir.FunctionType(ir.VoidType(), [], False)
+# base_func = ir.Function(module, func_type, name="main")
+# block = base_func.append_basic_block(name="entry")
+# builder = ir.IRBuilder(block)
 
 
-ast = yacc.parse(data, debug = False).yaml_format()
-print(type(yacc.parse(data, debug = False)))
-yacc.parse(data, debug = False).eval(module, builder)
+# ast = yacc.parse(data, debug = False).yaml_format()
+# print(type(yacc.parse(data, debug = False)))
+printf = None
+yacc.parse(data, debug = False).eval(module, printf)
 # eval(builder)
 print(module)
 # with open(output_file_name, 'w') as file:
