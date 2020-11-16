@@ -359,6 +359,20 @@ class ExpGlobID:
             res = res + self.params.yaml_format(prefix + '  ')
         return res
 
+    def eval(self, module, builder): # not tested yet
+        func_name = self.globid.value
+        func = func_map.get(func_name, None)
+        if func == None:
+            raise Exception() # not catched yet
+        args = []
+        if args != None:
+            for exp in self.params:
+                args.append(exp.eval(module, builder))
+        i = builder.call(func, args)
+        return i
+
+func_map = {}  #funcname : func
+
 class Assign:
     def __init__(self, var, exp):
         self.type = 'assign'
