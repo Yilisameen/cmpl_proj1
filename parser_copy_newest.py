@@ -310,7 +310,7 @@ class VDeclStatement:
                 value = builder.uitofp(value, ir.FloatType())
             if value.type == ir.FloatType():
                 value = builder.fptosi(value, var_ptr.type.pointee)
-        elif var_ptr.type.pointee == ir.FloatType():
+        elif var_ptr.type.pointee == ir.FloatType(32):
             if value.type == ir.IntType(1) or value.type == ir.IntType(32):
                 value = builder.uitofp(value, ir.FloatType())
         builder.store(value, var_ptr)
@@ -635,7 +635,7 @@ class Assign:
                 value = builder.uitofp(value, ir.FloatType())
             if value.type == ir.FloatType():
                 value = builder.fptosi(value, ptr.type.pointee)
-        elif ptr.type.pointee == ir.FloatType():
+        elif ptr.type.pointee == ir.FloatType(32):
             if value.type == ir.IntType(1) or value.type == ir.IntType(32):
                 value = builder.uitofp(value, ir.FloatType())
 
