@@ -8,12 +8,25 @@ def get_ir_type(typename):
     ir_ret_type = None
     if typename == "int":
         ir_ret_type = ir.IntType(32)
-    elif typename == "float":
-        ir_ret_type = ir.FloatType()
     elif typename == "ref int":
         ir_ret_type = ir.PointerType(ir.IntType(32))
+    elif typename == "noalias ref int":
+        ir_ret_type = ir.PointerType(ir.IntType(32))
+    elif typename == "float":
+        ir_ret_type = ir.FloatType()
     elif typename == "ref float":
         ir_ret_type = ir.PointType(ir.FloatType())
+    elif typename == "noalias ref float":
+        ir_ret_type = ir.PointType(ir.FloatType())
+    elif typename == "bool":
+        ir_ret_type = ir.IntType(1)
+    elif typename == "ref bool":
+        ir_ret_type = ir.PointerType(ir.IntType(1))
+    elif typename == "noalias ref bool":
+        ir_ret_type = ir.PointerType(ir.IntType(1))
+    elif typename == "void":
+        ir_ret_type = ir.VoidType()
+
 
     return ir_ret_type
 
@@ -102,8 +115,13 @@ class Function:
                 ptr = builder.alloca(ir_arg_type[i])
                 varid_symbol_ptr_table[func.args[i].name] = ptr
                 builder.store(func.args[i], ptr)
+
+            if "noalias" in types[i]:
+                func.args[i].add_attribute('noalias')
         
-        self.blk.eval(module, builder, external_funcs) 
+        self.blk.eval(module, builder, external_funcs)
+        if self.ret_type == 'void':
+            builder.ret_void()
 
 class Functions:
     def __init__(self, functions):
@@ -142,8 +160,8 @@ class External:
 
         args = []
         if self.tdecls:
-            for type in self.tdecls.types:
-                args.append(get_ir_type(type))
+            for typename in self.tdecls.types:
+                args.append(get_ir_type(typename))
 
         if self.globid == "getarg":
             external_funcs.get_arg()
@@ -579,7 +597,7 @@ class ExpGlobID:
         if func == None:
             raise Exception() # not catched yet
         args = []
-        if args != None:
+        if self.params != None:
             for exp in self.params.exps:
                 args.append(exp.eval(module, builder))
         i = builder.call(func, args)
@@ -813,7 +831,7 @@ class LogicOps:
         return res
 
     def eval(self, module, builder):
-        value_type = self.lhs.get_type()
+        value_type = ref_type_map.get(self.lhs.get_type())
         i_lhs = self.lhs.eval(module, builder)
         i_rhs = self.rhs.eval(module, builder)
         # print(value_type)
