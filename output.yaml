@@ -155,7 +155,7 @@ funcs:
         vars:
           -
             node: vdecl
-            type: noalias ref int
+            type: int
             var: $n
     -
       name: func
@@ -232,18 +232,75 @@ funcs:
           name: stmts
           stmts:
             -
-              name: expstmt
+              name: printslit
+              string: "fib(5):"
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $val
               exp:
                 binop_type: int
                 name: funccall
-                globid: getarg
+                globid: fib
                 params: 
                   name: exps
                   exps:
                     -
                       binop_type: int
                       name: lit
-                      value: 1
+                      value: 5
+            -
+              name: print
+              exp:
+                binop_type: int
+                name: varval
+                var: $val
+            -
+              name: printslit
+              string: "fib(5)+1:"
+            -
+              name: expstmt
+              exp:
+                binop_type: void
+                name: funccall
+                globid: inc
+                params: 
+                  name: exps
+                  exps:
+                    -
+                      binop_type: int
+                      name: varval
+                      var: $val
+            -
+              name: print
+              exp:
+                binop_type: int
+                name: varval
+                var: $val
+            -
+              name: printslit
+              string: "something else:"
+            -
+              name: expstmt
+              exp:
+                binop_type: void
+                name: funccall
+                globid: things
+                params: 
+                  name: exps
+                  exps:
+                    -
+                      binop_type: int
+                      name: varval
+                      var: $val
+            -
+              name: print
+              exp:
+                binop_type: int
+                name: varval
+                var: $val
             -
               name: ret
               exp:

@@ -13,11 +13,11 @@ def int fib (int $n) {
     return $a + $b;
 }
 
-def void inc (ref int $n) {
+def void inc (int $n) {
   $n = $n + 1;
 }
 
-def void things (ref int $n) {
+def void things (int $n) {
   while (!($n > 100)) {
     $n = $n * $n - 2;
   }

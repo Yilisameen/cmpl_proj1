@@ -11,6 +11,7 @@ parser.add_argument('input_file', metavar='input_file', help='the name of the in
 parser.add_argument('-emit-ast', action='store_true', default=False, dest='output_ast', help='to save the ast into the output file'),
 parser.add_argument('-emit-llvm', action='store_true', default=False, dest='print_ir', help="to print intermediate representation to the console")
 parser.add_argument('-jit', action='store_true', default=False, dest='compile_jit', help="to compile, jit and run the code"),
+parser.add_argument('-O', action='store_true', default=False, dest='optimized', help="to optimized the code")
 parser.add_argument('-o', action='store', dest='output_file', required=False, help='the name of the output file to store ast')
 parser.add_argument('-sysarg', nargs='*', help="system arguments for the input code")
 args = parser.parse_args()
@@ -56,6 +57,16 @@ if args.compile_jit:
     
     ir = str(module)
     mod = binding.parse_assembly(ir)
+    #optimize the code
+    if args.optimized:
+        pmb = binding.create_pass_manager_builder()
+        pmb.opt_level = 3
+        fpm = binding.create_function_pass_manager()
+        pmb.populate(fpm)
+        pm = binding.create_module_pass_manager()
+        pmb.populate(pm)
+        pm.run(mod)
+    #### optimized end ####
     mod.verify()
     engine.add_module(mod)
     engine.finalize_object()
