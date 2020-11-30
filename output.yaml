@@ -31,33 +31,15 @@ funcs:
               vdecl:
                 node: vdecl
                 type: cint
-                var: $j
-              exp:
-                binop_type: int
-                name: uop
-                op: minus
-                exp:
-                  binop_type: int
-                  name: lit
-                  value: 1
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
                 var: $b
               exp:
                 binop_type: cint
-                name: binop
-                op: div
-                lhs: 
+                name: uop
+                op: minus
+                exp:
                   binop_type: cint
                   name: varval
                   var: $i
-                rhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $j
             -
               name: ret
               exp:
