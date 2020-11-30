@@ -1,8 +1,8 @@
 
 def int run () {
     cint $i = -2147483648;
-    cint $j = 1;
-    cint $b = $i - $j;
+    cint $j = -1;
+    cint $b = $i / $j;
     return 0;
 }
 

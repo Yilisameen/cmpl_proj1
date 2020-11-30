@@ -59,12 +59,30 @@ if args.compile_jit:
     mod = binding.parse_assembly(ir)
     #optimize the code
     if args.optimized:
-        pmb = binding.create_pass_manager_builder()
+        pmb = binding.PassManagerBuilder()
         pmb.opt_level = 3
-        fpm = binding.create_function_pass_manager()
+        fpm = binding.create_function_pass_manager(mod)
         pmb.populate(fpm)
-        pm = binding.create_module_pass_manager()
+        pm = binding.ModulePassManager()
         pmb.populate(pm)
+
+        pm.add_constant_merge_pass()
+        pm.add_dead_arg_elimination_pass()
+        pm.add_function_attrs_pass()
+        pm.add_function_inlining_pass(200) # threshold = 200
+        pm.add_global_dce_pass()
+        pm.add_global_optimizer_pass()
+        pm.add_ipsccp_pass()
+        pm.add_dead_code_elimination_pass()
+        pm.add_cfg_simplification_pass()   
+        pm.add_gvn_pass()
+        pm.add_instruction_combining_pass()
+        pm.add_licm_pass()
+        pm.add_sccp_pass()
+        pm.add_sroa_pass()
+        pm.add_type_based_alias_analysis_pass()
+        pm.add_basic_alias_analysis_pass()
+
         pm.run(mod)
     #### optimized end ####
     mod.verify()
@@ -74,4 +92,5 @@ if args.compile_jit:
     cfunc = CFUNCTYPE(c_int)(entry)
     result = cfunc()
     print("program result:{}".format(result))
+    print(mod)
 

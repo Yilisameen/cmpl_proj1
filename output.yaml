@@ -6,225 +6,6 @@ funcs:
     -
       name: func
       ret_type: int
-      globid: fib
-      blk:
-        name: blk
-        contents:
-          name: stmts
-          stmts:
-            -
-              name: if
-              cond:
-                binop_type: bool
-                name: binop
-                op: lt
-                lhs: 
-                  binop_type: int
-                  name: varval
-                  var: $n
-                rhs: 
-                  binop_type: int
-                  name: lit
-                  value: 2
-              stmt:
-                name: if
-                cond:
-                  binop_type: bool
-                  name: binop
-                  op: eq
-                  lhs: 
-                    binop_type: int
-                    name: varval
-                    var: $n
-                  rhs: 
-                    binop_type: int
-                    name: lit
-                    value: 0
-                stmt:
-                  name: ret
-                  exp:
-                    binop_type: int
-                    name: lit
-                    value: 0
-                else_stmt:
-                  name: ret
-                  exp:
-                    binop_type: int
-                    name: lit
-                    value: 1
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: int
-                var: $a
-              exp:
-                binop_type: int
-                name: funccall
-                globid: fib
-                params: 
-                  name: exps
-                  exps:
-                    -
-                      binop_type: int
-                      name: binop
-                      op: sub
-                      lhs: 
-                        binop_type: int
-                        name: varval
-                        var: $n
-                      rhs: 
-                        binop_type: int
-                        name: lit
-                        value: 1
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: int
-                var: $b
-              exp:
-                binop_type: int
-                name: funccall
-                globid: fib
-                params: 
-                  name: exps
-                  exps:
-                    -
-                      binop_type: int
-                      name: binop
-                      op: sub
-                      lhs: 
-                        binop_type: int
-                        name: varval
-                        var: $n
-                      rhs: 
-                        binop_type: int
-                        name: lit
-                        value: 2
-            -
-              name: ret
-              exp:
-                binop_type: int
-                name: binop
-                op: add
-                lhs: 
-                  binop_type: int
-                  name: varval
-                  var: $a
-                rhs: 
-                  binop_type: int
-                  name: varval
-                  var: $b
-      vdecls:
-        name: vdecls
-        vars:
-          -
-            node: vdecl
-            type: int
-            var: $n
-    -
-      name: func
-      ret_type: void
-      globid: inc
-      blk:
-        name: blk
-        contents:
-          name: stmts
-          stmts:
-            -
-              name: expstmt
-              exp:
-                binop_type: int
-                name: assign
-                var: $n
-                exp:
-                  binop_type: int
-                  name: binop
-                  op: add
-                  lhs: 
-                    binop_type: int
-                    name: varval
-                    var: $n
-                  rhs: 
-                    binop_type: int
-                    name: lit
-                    value: 1
-      vdecls:
-        name: vdecls
-        vars:
-          -
-            node: vdecl
-            type: int
-            var: $n
-    -
-      name: func
-      ret_type: void
-      globid: things
-      blk:
-        name: blk
-        contents:
-          name: stmts
-          stmts:
-            -
-              name: while
-              cond:
-                binop_type: bool
-                name: uop
-                op: not
-                exp:
-                  binop_type: bool
-                  name: binop
-                  op: gt
-                  lhs: 
-                    binop_type: int
-                    name: varval
-                    var: $n
-                  rhs: 
-                    binop_type: int
-                    name: lit
-                    value: 100
-              stmt:
-                name: blk
-                contents:
-                  name: stmts
-                  stmts:
-                    -
-                      name: expstmt
-                      exp:
-                        binop_type: int
-                        name: assign
-                        var: $n
-                        exp:
-                          binop_type: int
-                          name: binop
-                          op: sub
-                          lhs: 
-                            binop_type: int
-                            name: binop
-                            op: mul
-                            lhs: 
-                              binop_type: int
-                              name: varval
-                              var: $n
-                            rhs: 
-                              binop_type: int
-                              name: varval
-                              var: $n
-                          rhs: 
-                            binop_type: int
-                            name: lit
-                            value: 2
-      vdecls:
-        name: vdecls
-        vars:
-          -
-            node: vdecl
-            type: int
-            var: $n
-    -
-      name: func
-      ret_type: int
       globid: run
       blk:
         name: blk
@@ -232,98 +13,55 @@ funcs:
           name: stmts
           stmts:
             -
-              name: printslit
-              string: "fib(5):"
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $i
+              exp:
+                binop_type: int
+                name: uop
+                op: minus
+                exp:
+                  binop_type: int
+                  name: lit
+                  value: 2147483648
             -
               name: vardeclstmt
               vdecl:
                 node: vdecl
-                type: int
-                var: $val
+                type: cint
+                var: $j
               exp:
                 binop_type: int
-                name: funccall
-                globid: fib
-                params: 
-                  name: exps
-                  exps:
-                    -
-                      binop_type: int
-                      name: lit
-                      value: 5
+                name: uop
+                op: minus
+                exp:
+                  binop_type: int
+                  name: lit
+                  value: 1
             -
-              name: print
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $b
               exp:
-                binop_type: int
-                name: varval
-                var: $val
-            -
-              name: printslit
-              string: "fib(5)+1:"
-            -
-              name: expstmt
-              exp:
-                binop_type: void
-                name: funccall
-                globid: inc
-                params: 
-                  name: exps
-                  exps:
-                    -
-                      binop_type: int
-                      name: varval
-                      var: $val
-            -
-              name: print
-              exp:
-                binop_type: int
-                name: varval
-                var: $val
-            -
-              name: printslit
-              string: "something else:"
-            -
-              name: expstmt
-              exp:
-                binop_type: void
-                name: funccall
-                globid: things
-                params: 
-                  name: exps
-                  exps:
-                    -
-                      binop_type: int
-                      name: varval
-                      var: $val
-            -
-              name: print
-              exp:
-                binop_type: int
-                name: varval
-                var: $val
+                binop_type: cint
+                name: binop
+                op: div
+                lhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $i
+                rhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $j
             -
               name: ret
               exp:
                 binop_type: int
                 name: lit
                 value: 0
-externs:
-  name: externs
-  externs:
-    -
-      name: extern
-      ret_type: int
-      globid: getarg
-      tdecls:
-        name: tdecls
-        types:
-          - int
-    -
-      name: extern
-      ret_type: float
-      globid: getargf
-      tdecls:
-        name: tdecls
-        types:
-          - int
 ...

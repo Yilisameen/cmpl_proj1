@@ -54,11 +54,40 @@ class Program:
         return res
 
     def eval(self, module, external_funcs):
+        fmt = "%s\n\0"
+        c_fmt = ir.Constant(ir.ArrayType(ir.IntType(8), len(fmt)),
+                            bytearray(fmt.encode("utf8")))
+        global_fmt = ir.GlobalVariable(module, c_fmt.type, name="fstr")
+        global_fmt.linkage = 'internal'
+        global_fmt.global_constant = True
+        global_fmt.initializer = c_fmt
+        global_variable_map['fmt'] = global_fmt
+
+        fmt_i = "%i\n\0"
+        c_fmt_i = ir.Constant(ir.ArrayType(ir.IntType(8), len(fmt_i)),
+                            bytearray(fmt_i.encode("utf8")))
+        global_fmt_i = ir.GlobalVariable(module, c_fmt_i.type, name="fstr_i")
+        global_fmt_i.linkage = 'internal'
+        global_fmt_i.global_constant = True
+        global_fmt_i.initializer = c_fmt_i
+        global_variable_map['fmt_i'] = global_fmt_i
+        print(global_variable_map)
+
+        printf_ty = ir.FunctionType(ir.IntType(32), [ir.IntType(8).as_pointer()], var_arg=True)
+        printf = ir.Function(module, printf_ty, name="printf")
+        func_map['printf'] = printf
+        exit_ty = ir.FunctionType(ir.VoidType(), [ir.IntType(32)])
+        exit_func = ir.Function(module, exit_ty, name="exit")
+        func_map['exit'] = exit_func
+
         for extern in self.externs.externs:
             extern.eval(module, external_funcs)
 
         for func in self.funcs.functions:
             func.eval(module, external_funcs)
+
+
+global_variable_map = {}
 
 class Function:
     type = 'function'
@@ -257,6 +286,15 @@ class ReturnStatement:
         builder.ret(i)
         return True
 
+def is_same_type(lhs, rhs):
+    if lhs == 'cint' and rhs == 'int':
+        return True
+    elif lhs == 'int' and rhs == 'cint':
+        return True
+    elif lhs == rhs:
+        return True
+    return False
+
 class VDeclStatement:
     def __init__(self, vdecl, exp):
         if vdecl.is_ref and exp.exp.type != 'varid':
@@ -274,7 +312,12 @@ class VDeclStatement:
         global ref_type_map
         left_type = ref_type_map.get(self.vdecl.typename.value, self.vdecl.typename.value)
         right_type = ref_type_map.get(self.exp.get_type(), self.exp.get_type())
-        if left_type != right_type:
+        # print(left_type)
+        # print(type(self.exp))
+        # print(right_type)
+        # print(type(self.exp))
+        # print(self.exp.get_type())
+        if not is_same_type(left_type, right_type):
             try:
                 raise Exception()
             except:
@@ -305,14 +348,14 @@ class VDeclStatement:
         # print(var_type)
         # print(var_name)
         if is_ref:
-            if 'int' in var_type:
+            if 'int' or 'cint' in var_type:
                 var_ptr = builder.alloca(ir.PointerType(ir.IntType(32)))
             elif 'float' in var_type:
                 var_ptr = builder.alloca(ir.PointerType(ir.FloatType()))
             elif 'bool' in var_type:
                 var_ptr = builder.alloca(ir.PointerType(ir.IntType(1)))
         else:
-            if var_type == 'int':
+            if var_type == 'int' or var_type == 'cint':
                 var_ptr = builder.alloca(ir.IntType(32))
             elif var_type == 'float':
                 var_ptr = builder.alloca(ir.FloatType())
@@ -501,6 +544,9 @@ class Exp:
         self.exp = exp
 
     def get_type(self):
+        # print('exp:' + self.exp.get_type())
+        # print(type(self.exp))
+        # print(type(self.exp))
         return self.exp.get_type()
 
     def yaml_format(self, prefix = ''):
@@ -527,6 +573,7 @@ class Binop:
         self.value = value
 
     def get_type(self):
+        # print('bi:' + self.value.get_type())
         return self.value.get_type()
 
     def node_type_check(self):
@@ -732,6 +779,19 @@ ref_type_map = {
     'noalias ref bool' : 'bool'
 }
 
+voidptr_ty = ir.IntType(8).as_pointer()
+
+def overflow_handle(builder):
+    arg = "error: overflow!\0"
+    c_str_val = ir.Constant(ir.ArrayType(ir.IntType(8), len(arg)),
+                            bytearray(arg.encode("utf8")))
+    c_str = builder.alloca(c_str_val.type)
+    builder.store(c_str_val, c_str)
+    fmt_arg = builder.bitcast(global_variable_map['fmt'], voidptr_ty)
+    builder.call(func_map['printf'], [fmt_arg, c_str])
+    builder.call(func_map['exit'], [ir.IntType(32)(0)])
+
+
 class ArithOps:
     def __init__(self, op, lhs, rhs):
         self.type = 'arithOps'
@@ -741,6 +801,7 @@ class ArithOps:
 
     def get_type(self):
         if self.node_type_check():
+            # print('test' + ref_type_map.get(self.lhs.get_type(), None))
             return ref_type_map.get(self.lhs.get_type(), None)
         else:
             try:
@@ -775,8 +836,10 @@ class ArithOps:
         value_type = self.get_type()
         i_lhs = self.lhs.eval(module, builder)
         i_rhs = self.rhs.eval(module, builder)
+        overflow_bit = 0
         if value_type == 'int':
             if self.op == 'add':
+                # print(builder.add(i_lhs, i_rhs))
                 i = builder.add(i_lhs, i_rhs)
             elif self.op == 'sub':
                 i = builder.sub(i_lhs, i_rhs)
@@ -784,6 +847,53 @@ class ArithOps:
                 i = builder.mul(i_lhs, i_rhs)
             elif self.op == 'div':
                 i = builder.sdiv(i_lhs, i_rhs)
+        if value_type == 'cint':#tag
+            if self.op == 'add':
+                test = builder.sadd_with_overflow(i_lhs, i_rhs)
+                i = builder.extract_value(test, 0)
+                bits = builder.extract_value(test, 1)
+                with builder.if_then(bits):
+                    overflow_handle(builder)
+                    # arg = "error: overflow!\0"
+                    # c_str_val = ir.Constant(ir.ArrayType(ir.IntType(8), len(arg)),
+                    #                         bytearray(arg.encode("utf8")))
+                    # c_str = builder.alloca(c_str_val.type)
+                    # builder.store(c_str_val, c_str)
+                    # fmt_arg = builder.bitcast(global_variable_map['fmt'], voidptr_ty)
+                    # builder.call(func_map['printf'], [fmt_arg, c_str])
+                    # builder.call(func_map['exit'], [ir.IntType(32)(0)])
+                # fmt_i_arg = builder.bitcast(global_variable_map['fmt_i'], voidptr_ty)
+                # builder.call(func_map['printf'], [fmt_i_arg, i])
+            elif self.op == 'sub':
+                # i = builder.ssub_with_overflow(i_lhs, i_rhs)
+                test = builder.ssub_with_overflow(i_lhs, i_rhs)
+                i = builder.extract_value(test, 0)
+                bits = builder.extract_value(test, 1)
+                with builder.if_then(bits):
+                    overflow_handle(builder)
+                # fmt_i_arg = builder.bitcast(global_variable_map['fmt_i'], voidptr_ty)
+                # builder.call(func_map['printf'], [fmt_i_arg, i])
+            elif self.op == 'mul':
+                # i = builder.smul_with_overflow(i_lhs, i_rhs)
+                test = builder.smul_with_overflow(i_lhs, i_rhs)
+                i = builder.extract_value(test, 0)
+                bits = builder.extract_value(test, 1)
+                with builder.if_then(bits):
+                    overflow_handle(builder)
+                # fmt_i_arg = builder.bitcast(global_variable_map['fmt_i'], voidptr_ty)
+                # builder.call(func_map['printf'], [fmt_i_arg, i])
+            elif self.op == 'div':
+                cp_zero = builder.icmp_signed('==', i_rhs, ir.IntType(32)(0))
+                with builder.if_then(cp_zero):
+                    overflow_handle(builder)
+                cp_intmin = builder.icmp_signed('==', i_lhs, ir.IntType(32)(-2147483648))
+                cp_minusone = builder.icmp_signed('==', i_rhs, ir.IntType(32)(-1))
+                pred = builder.and_(cp_intmin, cp_minusone)
+                with builder.if_then(pred):
+                    overflow_handle(builder)
+                i = builder.sdiv(i_lhs, i_rhs)
+                fmt_i_arg = builder.bitcast(global_variable_map['fmt_i'], voidptr_ty)
+                builder.call(func_map['printf'], [fmt_i_arg, i])
         elif value_type == 'float':
             if self.op == 'add':
                 i = builder.fadd(i_lhs, i_rhs)
@@ -793,6 +903,12 @@ class ArithOps:
                 i = builder.fmul(i_lhs, i_rhs)
             elif self.op == 'div':
                 i = builder.fdiv(i_lhs, i_rhs)
+        # if overflow_bit != 0:#tag
+        #     try:
+        #         raise Exception()
+        #     except:
+        #         print('errors: arithmetic overflow!')
+        #         sys.exit(21)
         return i
 
 
@@ -897,8 +1013,19 @@ class Uop:
     def eval(self, module, builder):
         if self.op == 'not':
             i = builder.not_(self.exp.eval(module, builder))
-        elif self.op == 'minus':
-            i = builder.neg(self.exp.eval(module, builder))
+        elif self.op == 'minus':# tag
+            # i = builder.neg(self.exp.eval(module, builder))
+            if self.exp.get_type() == 'cint':
+                test = builder.smul_with_overflow(ir.Constant(ir.IntType(32), -1), self.exp.eval(module, builder))
+                i = builder.extract_value(test, 0)
+                bits = builder.extract_value(test, 1)
+                with builder.if_then(bits):
+                    overflow_handle(builder)
+            else:
+                i = builder.neg(self.exp.eval(module, builder))
+            # fmt_i_arg = builder.bitcast(global_variable_map['fmt_i'], voidptr_ty)
+            # builder.call(func_map['printf'], [fmt_i_arg, i])
+
         return i
 
 class Lit:
@@ -968,9 +1095,9 @@ class Vdecls:
             res  = res + self.vars[i].yaml_format(prefix + '  ')
         return res
 
-    def eval(self, module, builder):
-        for vdecl in self.vars:
-            vdecl.eval(module, builder)
+    # def eval(self, module, builder):
+    #     for vdecl in self.vars:
+    #         vdecl.eval(module, builder)
 
 class Vdecl:
     def __init__(self, typename, var, is_ref = False):
@@ -990,27 +1117,27 @@ class Vdecl:
         res = res + self.typename.yaml_format(prefix) + self.var.yaml_format(prefix)
         return res
 
-    def eval(self, module, builder):
-        var_type = self.typename.value
-        var_name = self.var.value
-        is_ref = self.is_ref
-        # print(var_type)
-        # print(var_name)
-        if is_ref:
-            if 'int' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.IntType(32)))
-            elif 'float' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.FloatType()))
-            elif 'bool' in var_type:
-                var_ptr = builder.alloca(ir.PointerType(ir.IntType(1)))
-        else:
-            if var_type == 'int':
-                var_ptr = builder.alloca(ir.IntType(32))
-            elif var_type == 'float':
-                var_ptr = builder.alloca(ir.FloatType())
-            elif var_type == 'bool':
-                var_ptr = builder.alloca(ir.IntType(1))
-        varid_symbol_ptr_table[var_name] = var_ptr
+    # def eval(self, module, builder):
+    #     var_type = self.typename.value
+    #     var_name = self.var.value
+    #     is_ref = self.is_ref
+    #     # print(var_type)
+    #     # print(var_name)
+    #     if is_ref:
+    #         if 'int' in var_type:
+    #             var_ptr = builder.alloca(ir.PointerType(ir.IntType(32)))
+    #         elif 'float' in var_type:
+    #             var_ptr = builder.alloca(ir.PointerType(ir.FloatType()))
+    #         elif 'bool' in var_type:
+    #             var_ptr = builder.alloca(ir.PointerType(ir.IntType(1)))
+    #     else:
+    #         if var_type == 'int':
+    #             var_ptr = builder.alloca(ir.IntType(32))
+    #         elif var_type == 'float':
+    #             var_ptr = builder.alloca(ir.FloatType())
+    #         elif var_type == 'bool':
+    #             var_ptr = builder.alloca(ir.IntType(1))
+    #     varid_symbol_ptr_table[var_name] = var_ptr
 
     
 

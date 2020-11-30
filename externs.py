@@ -4,7 +4,7 @@ class ExternalFunctions:
 	def __init__(self, module, sys_args):
 		self.module = module
 		self.sys_args = [1, 2, 3]
-		self.get_printf()
+		# self.get_printf()
 
 	def get_arg(self, func_map):
 		sys_args = [int(float(value)) for value in self.sys_args]
@@ -64,16 +64,20 @@ class ExternalFunctions:
 		address = builder.gep(ptr, [int_0, value])
 		builder.ret(builder.load(address))
 
-	def get_printf(self):
-		char_pointer = ir.IntType(8).as_pointer()
-		fnty1 = ir.FunctionType(ir.VoidType(), [char_pointer])
-		self.print_string = ir.Function(self.module, fnty1, name="printString")
+	# def get_printf(self):
+		# char_pointer = ir.IntType(8).as_pointer()
+		# fnty1 = ir.FunctionType(ir.VoidType(), [char_pointer], True)
+		# self.print_string = ir.Function(self.module, fnty1, name="printString")
 
-		fnty2 = ir.FunctionType(ir.VoidType(), [ir.IntType(32)])
-		self.print_int = ir.Function(self.module, fnty2, name="printInt")
+		# fnty2 = ir.FunctionType(ir.VoidType(), [ir.IntType(32)], True)
+		# self.print_int = ir.Function(self.module, fnty2, name="printInt")
 
-		fnty3 = ir.FunctionType(ir.VoidType(), [ir.FloatType()])
-		self.print_float = ir.Function(self.module, fnty3, name="printFloat")
+		# fnty3 = ir.FunctionType(ir.VoidType(), [ir.FloatType()], True)
+		# self.print_float = ir.Function(self.module, fnty3, name="printFloat")
+		# printf_ty = ir.FunctionType(ir.IntType(32), [ir.IntType(8).as_pointer()], var_arg=True)
+		# printf = ir.Function(self.module, printf_ty, name="printf")
+		# exit_ty = ir.FunctionType(ir.VoidType(), [ir.IntType(32)])
+		# exit_func = ir.Function(self.module, exit_ty, name="exit")
 
 
 

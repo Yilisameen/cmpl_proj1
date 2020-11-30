@@ -12,5 +12,7 @@ def float test (int $a, int $b) {
 }
 
 def int run(){
+    float $res = 0.0;
+    $res = test(1, 2);
     return 0;
 }

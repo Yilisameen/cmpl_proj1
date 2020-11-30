@@ -1,31 +1,8 @@
-extern int getarg(int);
-extern float getargf(int);
-
-def int fib (int $n) {
-    if ($n < 2)
-        if ($n == 0)
-            return 0;
-        else
-            return 1;
-    
-    int $a = fib ($n - 1);
-    int $b = fib ($n - 2);
-    return $a + $b;
-}
-
-def void inc (noalias ref int $n) {
-  $n = $n + 1;
-}
-
-def void things (int $n) {
-  while (!($n > 100)) {
-    $n = $n * $n - 2;
-  }
-  
-}
 
 def int run () {
-    getarg(1);
+    cint $i = 2147483647;
+    cint $j = 1;
+    cint $b = $i + $j;
     return 0;
 }
 

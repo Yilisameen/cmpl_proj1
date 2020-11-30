@@ -1,19 +1,7 @@
-def int fib (int $n) {
-    if ($n < 2)
-        if ($n == 0)
-            return 0;
-        else
-            return 1;
-    
-    int $a = fib ($n - 1);
-    int $b = fib ($n - 2);
-    return $a + $b;
-}
-
-def void inc (ref int $n) {
-  $n = $n + 1;
-}
 
 def int run () {
-	fib(5);
+    cint $i = -2147483648;
+    cint $b = -$i;
+    return 0;
 }
+
