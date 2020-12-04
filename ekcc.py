@@ -5,6 +5,10 @@ from llvmlite import ir, binding
 from externs import ExternalFunctions
 import argparse
 from ctypes import *
+try:
+    from time import perf_counter as time
+except ImportError:
+    from time import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('input_file', metavar='input_file', help='the name of the input file your want to parse')
@@ -49,14 +53,16 @@ if args.compile_jit:
     binding.initialize_native_target()
     binding.initialize_native_asmprinter()
 
-    target = binding.Target.from_default_triple()
-    target_machine = target.create_target_machine()
+    # target = binding.Target.from_default_triple()
+    # target_machine = target.create_target_machine()
 
-    backing_mod = binding.parse_assembly("")
-    engine = binding.create_mcjit_compiler(backing_mod, target_machine)
+    # backing_mod = binding.parse_assembly("")
+    # engine = binding.create_mcjit_compiler(backing_mod, target_machine)
     
     ir = str(module)
     mod = binding.parse_assembly(ir)
+    mod.verify()
+
     #optimize the code
     if args.optimized:
         pmb = binding.PassManagerBuilder()
@@ -66,31 +72,53 @@ if args.compile_jit:
         pm = binding.ModulePassManager()
         pmb.populate(pm)
 
-        pm.add_constant_merge_pass()
-        pm.add_dead_arg_elimination_pass()
-        pm.add_function_attrs_pass()
-        pm.add_function_inlining_pass(200) # threshold = 200
-        pm.add_global_dce_pass()
-        pm.add_global_optimizer_pass()
-        pm.add_ipsccp_pass()
-        pm.add_dead_code_elimination_pass()
-        pm.add_cfg_simplification_pass()   
-        pm.add_gvn_pass()
-        pm.add_instruction_combining_pass()
-        pm.add_licm_pass()
-        pm.add_sccp_pass()
-        pm.add_sroa_pass()
-        pm.add_type_based_alias_analysis_pass()
+        # pm.add_constant_merge_pass()
+        # pm.add_dead_arg_elimination_pass()
+        # pm.add_function_attrs_pass()
+        # pm.add_function_inlining_pass(200) # threshold = 200
+        # pm.add_global_dce_pass()
+        # pm.add_global_optimizer_pass()
+        # pm.add_ipsccp_pass()
+        # pm.add_dead_code_elimination_pass()
+        # pm.add_cfg_simplification_pass()   
+        # pm.add_gvn_pass()
+        # pm.add_instruction_combining_pass()
+        # pm.add_licm_pass()
+        # pm.add_sccp_pass()
+        # pm.add_sroa_pass()
+        # pm.add_type_based_alias_analysis_pass()
         pm.add_basic_alias_analysis_pass()
 
+        t1 = time()
+
         pm.run(mod)
+
+        t2 = time()
+
+        print("optimize time: ", t2 - t1)
     #### optimized end ####
-    mod.verify()
-    engine.add_module(mod)
-    engine.finalize_object()
-    entry = engine.get_function_address("main")
-    cfunc = CFUNCTYPE(c_int)(entry)
-    result = cfunc()
-    print("program result:{}".format(result))
-    print(mod)
+
+    t3 = time()
+
+    target = binding.Target.from_default_triple()
+    target_machine = target.create_target_machine()
+
+    with binding.create_mcjit_compiler(mod, target_machine) as engine:
+	    # engine.add_module(mod)
+	    engine.finalize_object()
+	    entry = engine.get_function_address("main")
+
+	    t4 = time()
+	    print("JIT compile time: ", t4 - t3)
+
+	    t5 = time()
+
+	    cfunc = CFUNCTYPE(c_int)(entry)
+	    result = cfunc()
+
+	    t6 = time()
+	    print("Execution of the program: ", t6 - t5)
+
+	    # print("program result:{}".format(result))
+	    # print(mod)
 

@@ -1,0 +1,10 @@
+def int run () {
+    cint $i = 6;
+    cint $j = 3;
+    cint $a = $i + $j;
+    cint $b = $i - $j;
+    cint $c = $i * $j;
+    cint $d = $i / $j;
+    cint $e = -$j;
+    return 0;
+}

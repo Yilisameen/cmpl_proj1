@@ -20,12 +20,36 @@ funcs:
                 var: $i
               exp:
                 binop_type: int
-                name: uop
-                op: minus
-                exp:
-                  binop_type: int
-                  name: lit
-                  value: 2147483648
+                name: lit
+                value: 6
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $j
+              exp:
+                binop_type: int
+                name: lit
+                value: 3
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $a
+              exp:
+                binop_type: cint
+                name: binop
+                op: add
+                lhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $i
+                rhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $j
             -
               name: vardeclstmt
               vdecl:
@@ -34,12 +58,66 @@ funcs:
                 var: $b
               exp:
                 binop_type: cint
+                name: binop
+                op: sub
+                lhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $i
+                rhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $j
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $c
+              exp:
+                binop_type: cint
+                name: binop
+                op: mul
+                lhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $i
+                rhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $j
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $d
+              exp:
+                binop_type: cint
+                name: binop
+                op: div
+                lhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $i
+                rhs: 
+                  binop_type: cint
+                  name: varval
+                  var: $j
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: cint
+                var: $e
+              exp:
+                binop_type: cint
                 name: uop
                 op: minus
                 exp:
                   binop_type: cint
                   name: varval
-                  var: $i
+                  var: $j
             -
               name: ret
               exp:
