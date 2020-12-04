@@ -1,0 +1,13 @@
+def int test (int $a) {
+    if ($a + 1 < $a) {
+        return 0;
+    }
+    return 1;
+}
+
+def int run () {
+    int $a = 1;
+    int $res = test($a);
+    return 0;
+}
+

@@ -82,8 +82,8 @@ if args.compile_jit:
         # pm.add_dead_code_elimination_pass()
         # pm.add_cfg_simplification_pass()   
         # pm.add_gvn_pass()
-        pm.add_instruction_combining_pass()
-        # pm.add_licm_pass()
+        # pm.add_instruction_combining_pass()
+        pm.add_licm_pass()
         # pm.add_sccp_pass()
         # pm.add_sroa_pass()
         # pm.add_type_based_alias_analysis_pass()
@@ -119,6 +119,6 @@ if args.compile_jit:
 	    t6 = time()
 	    print("Execution of the program: ", t6 - t5)
 
-	    print("program result:{}".format(result))
+	    # print("program result:{}".format(result))
 	    print(mod)
 

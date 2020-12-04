@@ -17,7 +17,7 @@ funcs:
               vdecl:
                 node: vdecl
                 type: int
-                var: $a
+                var: $i
               exp:
                 binop_type: int
                 name: lit
@@ -27,43 +27,97 @@ funcs:
               vdecl:
                 node: vdecl
                 type: int
-                var: $b
+                var: $res
               exp:
                 binop_type: int
-                name: binop
-                op: add
-                lhs: 
-                  binop_type: int
-                  name: varval
-                  var: $a
-                rhs: 
-                  binop_type: int
-                  name: lit
-                  value: 1
+                name: lit
+                value: 0
             -
               name: vardeclstmt
               vdecl:
                 node: vdecl
                 type: int
-                var: $c
+                var: $x
               exp:
                 binop_type: int
+                name: lit
+                value: 2
+            -
+              name: while
+              cond:
+                binop_type: bool
                 name: binop
-                op: add
+                op: lt
                 lhs: 
                   binop_type: int
                   name: varval
-                  var: $b
+                  var: $i
                 rhs: 
                   binop_type: int
-                  name: lit
-                  value: 1
+                  name: varval
+                  var: $a
+              stmt:
+                name: blk
+                contents:
+                  name: stmts
+                  stmts:
+                    -
+                      name: expstmt
+                      exp:
+                        binop_type: int
+                        name: assign
+                        var: $res
+                        exp:
+                          binop_type: int
+                          name: binop
+                          op: add
+                          lhs: 
+                            binop_type: int
+                            name: varval
+                            var: $i
+                          rhs: 
+                            binop_type: int
+                            name: binop
+                            op: mul
+                            lhs: 
+                              binop_type: int
+                              name: varval
+                              var: $x
+                            rhs: 
+                              binop_type: int
+                              name: varval
+                              var: $x
+                    -
+                      name: expstmt
+                      exp:
+                        binop_type: int
+                        name: assign
+                        var: $i
+                        exp:
+                          binop_type: int
+                          name: binop
+                          op: add
+                          lhs: 
+                            binop_type: int
+                            name: varval
+                            var: $i
+                          rhs: 
+                            binop_type: int
+                            name: lit
+                            value: 1
             -
               name: ret
               exp:
                 binop_type: int
                 name: varval
-                var: $c
+                var: $res
+      vdecls:
+        name: vdecls
+        vars:
+          -
+            node: vdecl
+            type: int
+            var: $a
     -
       name: func
       ret_type: int
@@ -78,11 +132,28 @@ funcs:
               vdecl:
                 node: vdecl
                 type: int
+                var: $a
+              exp:
+                binop_type: int
+                name: lit
+                value: 5
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
                 var: $res
               exp:
                 binop_type: int
                 name: funccall
                 globid: test
+                params: 
+                  name: exps
+                  exps:
+                    -
+                      binop_type: int
+                      name: varval
+                      var: $a
             -
               name: ret
               exp:
