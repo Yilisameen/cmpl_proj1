@@ -66,7 +66,7 @@ if args.compile_jit:
     #optimize the code
     if args.optimized:
         pmb = binding.PassManagerBuilder()
-        pmb.opt_level = 3
+        pmb.opt_level = 0
         fpm = binding.create_function_pass_manager(mod)
         pmb.populate(fpm)
         pm = binding.ModulePassManager()
@@ -82,7 +82,7 @@ if args.compile_jit:
         # pm.add_dead_code_elimination_pass()
         # pm.add_cfg_simplification_pass()   
         # pm.add_gvn_pass()
-        # pm.add_instruction_combining_pass()
+        pm.add_instruction_combining_pass()
         # pm.add_licm_pass()
         # pm.add_sccp_pass()
         # pm.add_sroa_pass()
@@ -119,6 +119,6 @@ if args.compile_jit:
 	    t6 = time()
 	    print("Execution of the program: ", t6 - t5)
 
-	    # print("program result:{}".format(result))
-	    # print(mod)
+	    print("program result:{}".format(result))
+	    print(mod)
 

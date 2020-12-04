@@ -6,6 +6,67 @@ funcs:
     -
       name: func
       ret_type: int
+      globid: test
+      blk:
+        name: blk
+        contents:
+          name: stmts
+          stmts:
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $a
+              exp:
+                binop_type: int
+                name: lit
+                value: 1
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $b
+              exp:
+                binop_type: int
+                name: binop
+                op: add
+                lhs: 
+                  binop_type: int
+                  name: varval
+                  var: $a
+                rhs: 
+                  binop_type: int
+                  name: lit
+                  value: 1
+            -
+              name: vardeclstmt
+              vdecl:
+                node: vdecl
+                type: int
+                var: $c
+              exp:
+                binop_type: int
+                name: binop
+                op: add
+                lhs: 
+                  binop_type: int
+                  name: varval
+                  var: $b
+                rhs: 
+                  binop_type: int
+                  name: lit
+                  value: 1
+            -
+              name: ret
+              exp:
+                binop_type: int
+                name: varval
+                var: $c
+    -
+      name: func
+      ret_type: int
       globid: run
       blk:
         name: blk
@@ -16,108 +77,12 @@ funcs:
               name: vardeclstmt
               vdecl:
                 node: vdecl
-                type: cint
-                var: $i
+                type: int
+                var: $res
               exp:
                 binop_type: int
-                name: lit
-                value: 6
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $j
-              exp:
-                binop_type: int
-                name: lit
-                value: 3
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $a
-              exp:
-                binop_type: cint
-                name: binop
-                op: add
-                lhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $i
-                rhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $j
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $b
-              exp:
-                binop_type: cint
-                name: binop
-                op: sub
-                lhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $i
-                rhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $j
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $c
-              exp:
-                binop_type: cint
-                name: binop
-                op: mul
-                lhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $i
-                rhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $j
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $d
-              exp:
-                binop_type: cint
-                name: binop
-                op: div
-                lhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $i
-                rhs: 
-                  binop_type: cint
-                  name: varval
-                  var: $j
-            -
-              name: vardeclstmt
-              vdecl:
-                node: vdecl
-                type: cint
-                var: $e
-              exp:
-                binop_type: cint
-                name: uop
-                op: minus
-                exp:
-                  binop_type: cint
-                  name: varval
-                  var: $j
+                name: funccall
+                globid: test
             -
               name: ret
               exp:

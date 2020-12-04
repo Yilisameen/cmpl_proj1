@@ -1,0 +1,12 @@
+def int test () {
+    int $a = 1;
+    int $b = $a + 1;
+    int $c = $b + 1;
+    return $c;
+}
+
+def int run () {
+    int $res = test();
+    return 0;
+}
+
